@@ -27,7 +27,7 @@ public class Tubick extends man implements mindOrd {
         System.out.println("Глаза :: "+eye);
         System.out.println("Губы :: "+lip);
         System.out.println("Нос :: "+nose);
-        //new portret(String.valueOf(k),eye,nose,lip);
+        //anew portret(String.valueOf(k),eye,nose,lip);
 
     }
     public void rationsl(){

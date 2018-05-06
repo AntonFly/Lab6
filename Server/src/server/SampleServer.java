@@ -42,7 +42,7 @@ public  class SampleServer //extends Thread
             }
         }
         catch(Exception e)
-        {System.out.println("init error: "+e);} // вывод исключений
+        {e.printStackTrace();} // вывод исключений
 
     }
 

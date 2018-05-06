@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public  class Commands {
     public static final Gson GSON= new Gson();
-    public static String get_all(CopyOnWriteArrayList<portret> Pl, String data){
+    public synchronized static String get_all(CopyOnWriteArrayList<portret> Pl, String data){
         String output="";
         sortN(Pl);
         if (data.equals("")){
@@ -29,7 +29,28 @@ public  class Commands {
         sort(Pl);
         return output;
     }
-    public static String get(CopyOnWriteArrayList<portret> Pl, String data)throws FormatEx{
+    public synchronized static String get_all1(CopyOnWriteArrayList<portret> Pl, String data){
+        String output="";
+        sortN(Pl);
+        try{Iterator<portret> iter = Pl.iterator();
+        if (data.equals("")){
+            while (iter.hasNext()){
+                output=output+Parse.serialize(iter.next());
+
+            }
+            output=output+"\nTotal:"+Pl.size()+".";
+
+        }else{
+            output= "ERROR command's format.";
+        }
+        sort(Pl);
+        ;}
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+    public synchronized static String get(CopyOnWriteArrayList<portret> Pl, String data)throws FormatEx{
 
         if (Commands.checkString(data)){
             if (Integer.valueOf(data)>Pl.size()){
@@ -40,15 +61,15 @@ public  class Commands {
     else
         throw new FormatEx();
     }
-    public static String sort(CopyOnWriteArrayList<portret> Pl){
+    public synchronized static String sort(CopyOnWriteArrayList<portret> Pl){
         Pl.sort(portret::compareTo);
         return "Collection is sorted.";
     }
-    public static String sortN(CopyOnWriteArrayList<portret> Pl){
+    public synchronized static String sortN(CopyOnWriteArrayList<portret> Pl){
         Pl.sort(portret::compareTo1);
         return "Collection is sorted by name.";
     }
-    public static String remove(CopyOnWriteArrayList<portret> Pl, String data) throws FormatEx{
+    public synchronized static String remove(CopyOnWriteArrayList<portret> Pl, String data) throws FormatEx{
         if( Commands.checkString(data)){if (Integer.valueOf(data)>Pl.size()){
             throw new FormatEx();
         }else{
@@ -61,7 +82,7 @@ public  class Commands {
             throw new FormatEx();
 
     }
-    public static String count(CopyOnWriteArrayList<portret> Pl, String data){
+    public synchronized static String count(CopyOnWriteArrayList<portret> Pl, String data){
         boolean f=true;
         if(data.equals(null)||data.equals("")){f=false;}
         if (f){
@@ -75,7 +96,7 @@ public  class Commands {
      * @param Pl - заполняемая коллекция
      * @throws XmlExeption -исключечение, вызываемое при неверном формате входного файла (формат файла XML)
      */
-    public static String read(CopyOnWriteArrayList<portret> Pl) throws XmlExeption{
+    public synchronized static String read(CopyOnWriteArrayList<portret> Pl) throws XmlExeption{
        // System.out.println("1");
             try  {
                 BufferedReader br = new BufferedReader(new FileReader(System.getenv("objects")));
@@ -112,7 +133,7 @@ public  class Commands {
      * @param data - параметры удаляемых объектов
      * @throws JasonException - исключение, вызываемое при неправильном формате параметров (Формат параметров Json)
      */
-    public  static  String removeAll(CopyOnWriteArrayList<portret> Pl , String data) throws JasonException{
+    public synchronized static  String removeAll(CopyOnWriteArrayList<portret> Pl , String data) throws JasonException{
         boolean f= false;
         if (data.equals("")){
             return "Unknown command.";
@@ -142,7 +163,7 @@ public  class Commands {
      * @param data - параметры объекта
      * @throws JasonException - исключение, вызываемое при неправильном формате параметров (Формат параметров Json)
      */
-    public static  String add(CopyOnWriteArrayList<portret> Pl, String data) throws JasonException {
+    public synchronized static  String add(CopyOnWriteArrayList<portret> Pl, String data) throws JasonException {
         String output;
             portret pr=GSON.fromJson(data, portret.class);
            // Parse.deserialaize(data);
@@ -161,7 +182,7 @@ public  class Commands {
      * @param Pl - коллекция, в которую добавляется объект 
      * @param data - параметры объекта
      */
-    public static String add_if_min(CopyOnWriteArrayList<portret> Pl, String data) {
+    public synchronized static String add_if_min(CopyOnWriteArrayList<portret> Pl, String data) {
         String output="null";
 
 
@@ -192,7 +213,7 @@ public  class Commands {
      * Сохраняет коллекцию в файл 
      * @param Pl -сохраняемая коллекция
      */
-    public static String write(CopyOnWriteArrayList<portret> Pl){
+    public synchronized static String write(CopyOnWriteArrayList<portret> Pl){
         //System.out.println("1");
         try(PrintWriter pw = new PrintWriter(System.getenv("objects")))
         {   int i=0;
@@ -216,7 +237,7 @@ public  class Commands {
      * Удаляет последний объект коллекции
      * @param Pl -коллекция из которой удаляется объект
      */
-    public static String removeLast(CopyOnWriteArrayList<portret> Pl){
+    public synchronized static String removeLast(CopyOnWriteArrayList<portret> Pl){
         int length=Pl.size();
         Pl.remove(length-1);
         return ("Element is removed");
@@ -225,7 +246,7 @@ public  class Commands {
     /**
      * Вызов помощи
      */
-    public static void help(){
+    public synchronized static void help(){
         System.out.println("Press 'q' to save and exit\n");
         System.out.println("\"save\" to save current collection\n");
         System.out.println('"'+"add_if_min {element}"+'"'+" to add element if value of size is minimal\n");

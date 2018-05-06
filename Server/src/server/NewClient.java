@@ -50,7 +50,7 @@ public class   NewClient implements Runnable{
                 {
                     buf = new byte[64*1024];
                     // читаем 64кб от клиента, результат - кол-во реально принятых данных
-                    int rd = is.read(buf);
+                    is.read(buf);
                     // создаём строку, содержащую полученную от клиента информацию
                     String inStr = new String(buf, "UTF-8");
 
@@ -109,6 +109,10 @@ public class   NewClient implements Runnable{
                                 System.out.println("Client "+name+" is disconnected");
 
                                 break;
+                            case "get_all1":
+                                Commands.get_all1(pl.Mo,perem);
+                                //System.out.println(Commands.get_all(pl.Mo,perem));
+                                break;
                             case "get_all":
                                 os.write(Commands.get_all(pl.Mo,perem).getBytes());
                               //System.out.println(Commands.get_all(pl.Mo,perem));
@@ -154,6 +158,7 @@ public class   NewClient implements Runnable{
                     }
                     catch (SocketException e){
 
+
                     }
                     catch (ArrayIndexOutOfBoundsException e){
                         os.write("No such element(ArrayIndexOutOfBoundsException)".getBytes());
@@ -164,13 +169,16 @@ public class   NewClient implements Runnable{
                     catch (FormatEx e){
                         os.write("smth wrong with comand format".getBytes());
                     }
+                    catch (Exception e){}
                 }
 
 
 
 
-            }
-            catch(Exception e) {//System.out.println("init error: "+e); // вывод исключений
+            }catch (SocketException e){}
+            catch(Exception e) {
+                e.printStackTrace();
+                //System.out.println("init error: "+e); // вывод исключений
             }
     }
 }

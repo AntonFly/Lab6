@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public  class PortretList {
      public CopyOnWriteArrayList<portret> Mo = new CopyOnWriteArrayList<>();
+
 }
 
 
