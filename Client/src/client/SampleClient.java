@@ -17,7 +17,7 @@ public class SampleClient extends Thread
 
             // открываем сокет и коннектимся к localhost:3128
             // получаем сокет сервера
-            Socket s = new Socket("localhost", 5682);
+            Socket s = new Socket("cs.ifmo.ru", 5682);
             OutputStream os = s.getOutputStream();
             try {
                 os.write(args[0].getBytes("UTF-8"));
@@ -65,7 +65,7 @@ public class SampleClient extends Thread
 
 
                 // читаем ответ
-                byte buf[] = new byte[64 * 1024];
+                byte buf[] = new byte[1024 * 1024];
                 s.getInputStream().read(buf);
                 System.out.println("Waiting for server answer...");
                 String retstr = new String(buf, "UTF-8");

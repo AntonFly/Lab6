@@ -40,7 +40,7 @@ public class   NewClient implements Runnable{
 
                 // буффер данных в 64 килобайта
                 byte buf[];
-                buf = new byte[64*1024];
+                buf = new byte[1024*1024];
                 is.read(buf);
                 name=new String(buf,"UTF-8");
                 name=name.trim();
