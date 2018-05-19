@@ -17,7 +17,7 @@ public class SampleClient extends Thread
 
             // открываем сокет и коннектимся к localhost:3128
             // получаем сокет сервера
-            Socket s = new Socket("cs.ifmo.ru", 5682);
+            Socket s = new Socket("localhost", 5682);
             OutputStream os = s.getOutputStream();
             try {
                 os.write(args[0].getBytes("UTF-8"));

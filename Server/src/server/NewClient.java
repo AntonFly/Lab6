@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Iterator;
 import java.util.List;
 
 public class   NewClient implements Runnable{
@@ -99,11 +100,16 @@ public class   NewClient implements Runnable{
                         switch (command) {
                             case "closeClient":
                                 Commands.write(pl.Mo);
-                                for(int i =0;i<Clients.size();i++){
+                                Iterator<NewClient> iter =Clients.iterator();
+                                /*for(int i =0;i<Clients.size();i++){
                                     NewClient cl=Clients.get(i);
-                                    if (cl.name==this.name){
+                                    if (cl.name.equals(this.name)){
                                         Clients.remove(i);
-                                    }
+                                    }*/
+                                while (iter.hasNext()){
+                                    NewClient cl=iter.next();
+                                    if (cl.name.equals(name))
+                                        iter.remove();
 
                                 }
                                 System.out.println("Client "+name+" is disconnected");

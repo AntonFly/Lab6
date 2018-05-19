@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public  class Commands {
     public static final Gson GSON= new Gson();
-    public synchronized static String get_all(CopyOnWriteArrayList<portret> Pl, String data){
+    public static String get_all(CopyOnWriteArrayList<portret> Pl, String data){
         String output="";
         sortN(Pl);
         if (data.equals("")){
@@ -29,7 +29,7 @@ public  class Commands {
         sort(Pl);
         return output;
     }
-    public synchronized static String get_all1(CopyOnWriteArrayList<portret> Pl, String data){
+    public static String get_all1(CopyOnWriteArrayList<portret> Pl, String data){
         String output="";
         sortN(Pl);
         try{Iterator<portret> iter = Pl.iterator();
@@ -50,7 +50,7 @@ public  class Commands {
         }
         return "";
     }
-    public synchronized static String get(CopyOnWriteArrayList<portret> Pl, String data)throws FormatEx{
+    public static String get(CopyOnWriteArrayList<portret> Pl, String data)throws FormatEx{
 
         if (Commands.checkString(data)){
             if (Integer.valueOf(data)>Pl.size()){
@@ -82,7 +82,7 @@ public  class Commands {
             throw new FormatEx();
 
     }
-    public synchronized static String count(CopyOnWriteArrayList<portret> Pl, String data){
+    public static String count(CopyOnWriteArrayList<portret> Pl, String data){
         boolean f=true;
         if(data.equals(null)||data.equals("")){f=false;}
         if (f){
