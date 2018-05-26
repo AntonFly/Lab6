@@ -1,16 +1,17 @@
 package client;
 import Lab234.*;
 import server.Commands;
+import server.PortretList;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.swing.*;
+import java.io.*;
 import java.net.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class SampleClient extends Thread
 {
-
+    public  static PortretList portretList;
     public static void main(String args[])
     {try {
         try {
@@ -19,19 +20,32 @@ public class SampleClient extends Thread
             // получаем сокет сервера
             Socket s = new Socket("localhost", 5682);
             OutputStream os = s.getOutputStream();
-            try {
-                os.write(args[0].getBytes("UTF-8"));
-            }catch (IndexOutOfBoundsException e){
-                os.write("noName".getBytes("UTF-8"));
+            InputStream ins= s.getInputStream();
+            String name;
+            Colltime clltm= new Colltime(os,ins);
+            Thread NK = new Thread(clltm);
+
+            while (true) {
+                name = JOptionPane.showInputDialog("Ведите имя, под которым вы хотите отображаться в системе;");
+                if (name.length() != 0) {
+                    try {
+                        os.write(name.getBytes("UTF-8"));
+                        break;
+                    } catch (IndexOutOfBoundsException e) {
+                        os.write("noName".getBytes("UTF-8"));
+
+                    }
+                }
             }
             class ShutdownHook extends Thread {
 
                 public void run() {
 
-                       try {
-
-                           os.write("closeClient".getBytes("UTF-8"));
-                       } catch (Exception e){}
+                    try {
+                        //System.out.println("exit");
+                        os.write("closeClient".getBytes("UTF-8"));
+                    } catch (Exception e) {
+                    }
 
                 }
 
@@ -40,10 +54,14 @@ public class SampleClient extends Thread
             Runtime.getRuntime().addShutdownHook(shutdownHook);
             // берём поток вывода и выводим туда первый аргумент
             // заданный при вызове, адрес открытого сокета и его порт
+            ClienGui cgi = new ClienGui(name, s);
+            cgi.buildGui();
+           // NK.start();
             Scanner in = new Scanner(System.in);
+
             String input;
             while (true) {
-                System.out.print("Enter command (enter \"?\" to call up a list of commands): ");
+               // System.out.print("Enter command (enter \"?\" to call up a list of commands): ");
                 input = in.nextLine();
                 switch (input) {
                     case "":
@@ -66,7 +84,7 @@ public class SampleClient extends Thread
 
                 // читаем ответ
                 byte buf[] = new byte[1024 * 1024];
-                s.getInputStream().read(buf);
+                ins.read(buf);
                 System.out.println("Waiting for server answer...");
                 String retstr = new String(buf, "UTF-8");
                 // выводим ответ в консоль
@@ -85,3 +103,31 @@ public class SampleClient extends Thread
     }
     }
 }
+ class Colltime implements Runnable{
+    Socket s;
+    OutputStream os;
+    InputStream ins;
+        Colltime(OutputStream os, InputStream ins){
+            this.os=os;
+            this.ins=ins;
+        }
+     @Override
+     public void run() {
+         try {
+             while (true){
+                 byte buf[] = new byte[1024 * 1024];
+
+             //buf="getPortList".getBytes("UTF-8");
+             os.write("getPortList".getBytes("UTF-8"));
+             //s.getInputStream().read(buf)
+             ObjectInputStream ois=new ObjectInputStream(ins);
+             SampleClient.portretList=(PortretList)ois.readObject();
+             for (portret s:SampleClient.portretList.Mo) {
+                 System.out.println(s.NAME+" "+s.LOCATION);
+
+             }}
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+     }
+ }

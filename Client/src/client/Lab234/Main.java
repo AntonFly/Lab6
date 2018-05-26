@@ -34,7 +34,7 @@ public class Main {
         }
         Gvozdic.workBySaw(tree);
         Tubick.sitAtHome();
-        Tubick.askMal(M1,M2,M3,M4,M5);
+        //Tubick.askMal(M1,M2,M3,M4,M5);
     }
 
 }

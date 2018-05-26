@@ -1,6 +1,7 @@
 package server;
 
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
@@ -47,6 +48,7 @@ public class   NewClient implements Runnable{
                 name=name.trim();
                 if (name.equals("noName")) name=String.valueOf(num);
                 System.out.println("Client "+name+" is connected");
+                ServerGui.addRawClient(this);
                 while(true)
                 {
                     buf = new byte[64*1024];
@@ -108,12 +110,18 @@ public class   NewClient implements Runnable{
                                     }*/
                                 while (iter.hasNext()){
                                     NewClient cl=iter.next();
-                                    if (cl.name.equals(name))
+                                    if (cl.name.equals(name)){
                                         iter.remove();
-
+                                    System.out.println("Client "+name+" is disconnected");}
                                 }
-                                System.out.println("Client "+name+" is disconnected");
-
+//                                System.out.println("Client "+name+" is disconnected");
+                                ServerGui.initClientTable();
+                                break;
+                            case "getPortList":
+                                ObjectOutputStream oos= new ObjectOutputStream(os);
+                                oos.writeObject(pl);
+                                //oos.flush();
+                                //oos.close();
                                 break;
                             case "get_all1":
                                 Commands.get_all1(pl.Mo,perem);
@@ -127,10 +135,10 @@ public class   NewClient implements Runnable{
                                 os.write(Commands.get(pl.Mo, perem).getBytes());
                                 break;
                             case "sort":
-                                os.write(Commands.sort(pl.Mo).getBytes());
+                                Commands.sort(pl.Mo).getBytes();
                                 break;
                             case "sortN":
-                                os.write(Commands.sortN(pl.Mo).getBytes());
+                                Commands.sortN(pl.Mo).getBytes();
                                 break;
                             case "remove":
                                 os.write(Commands.remove(pl.Mo, perem).getBytes());
@@ -139,7 +147,7 @@ public class   NewClient implements Runnable{
                                 os.write(Commands.count(pl.Mo, perem).getBytes());
                                 break;
                             case "remove_last":
-                                os.write(Commands.removeLast(pl.Mo).getBytes());
+                                Commands.removeLast(pl.Mo).getBytes();
                                 break;
                             case "remove_all":
                                 os.write(Commands.removeAll(pl.Mo, perem).getBytes());
@@ -151,7 +159,7 @@ public class   NewClient implements Runnable{
                                 os.write(Commands.add_if_min(pl.Mo,perem).getBytes());
                                 break;
                             case "save":
-                                os.write(Commands.write(pl.Mo).getBytes());
+                                Commands.write(pl.Mo).getBytes();
                                 break;
 
                             default:
@@ -175,7 +183,7 @@ public class   NewClient implements Runnable{
                     catch (FormatEx e){
                         os.write("smth wrong with comand format".getBytes());
                     }
-                    catch (Exception e){}
+                    catch (Exception e){e.printStackTrace();}
                 }
 
 

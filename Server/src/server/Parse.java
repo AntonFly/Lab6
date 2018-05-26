@@ -7,8 +7,10 @@ public class Parse {
 
     static String Name;
     static String Date;
-    static Double Size;
+    static int Size;
     static String Location;
+    static String COLOUR;
+    static int X,Y;
 
     static public void deserializeXML(String inputStr) throws server.XmlExeption {
        // inputStr=inputStr.trim();
@@ -17,11 +19,20 @@ public class Parse {
         if (inputStr.charAt(0) == '<' && inputStr.charAt(lenght - 1) == '>') {
             inputStr = inputStr.substring(1, lenght - 2);
             String[] fields = inputStr.split(" ");
-            for (int i = 0; i < 4; i++) {
-                String[] parametrs = fields[i].split("=");
+            for (String s: fields) {
+                String[] parametrs = s.split("=");
                 parametrs[1] = parametrs[1].replaceAll(" ", "");
                 parametrs[1] = parametrs[1].substring(1, parametrs[1].length() - 1);
                 switch (parametrs[0]) {
+                    case "COLOUR":
+                        COLOUR=parametrs[1];
+                        break;
+                    case "X":
+                        X=Integer.valueOf(parametrs[1]);
+                        break;
+                    case "Y":
+                        Y=Integer.valueOf(parametrs[1]);
+                        break;
                     case "NAME":
                         Name = parametrs[1];
                         break;
@@ -29,7 +40,7 @@ public class Parse {
                         Date = parametrs[1];
                         break;
                     case "SIZE":
-                        Size = Double.valueOf(parametrs[1]);
+                        Size = Integer.valueOf(parametrs[1]);
                         break;
                     case "LOCATION":
                         Location = parametrs[1];
@@ -54,10 +65,10 @@ public class Parse {
         String str;
         double size=e.SIZE;
         if (e.SIZE % 1==0){
-         str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + (int)(size) + "\" LOCATION=\"" + e.LOCATION + "\"/>\n";
+         str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + (int)(size) + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\"/>\n";
          }
         else{
-            str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + e.SIZE + "\" LOCATION=\"" + e.LOCATION + "\"/>\n";
+            str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + e.SIZE + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\"/>\n";
         }
         return str;
     }

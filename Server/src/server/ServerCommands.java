@@ -21,7 +21,6 @@ public class ServerCommands implements Runnable {
     public  synchronized void run() {
         String input;
         class ShutdownHook extends Thread {
-
             public void run() {
                 Commands.write(pl.Mo);
 
@@ -29,55 +28,9 @@ public class ServerCommands implements Runnable {
         }
         ShutdownHook shutdownHook = new ShutdownHook();
         Runtime.getRuntime().addShutdownHook(shutdownHook);
-        Scanner sc=new Scanner(System.in);
-        while (true){
-            System.out.println("Enter the server comand(enter \"?\" fo help):");
-            input=sc.nextLine();
+      //  ServerGui gui= new ServerGui(pl,Clients);
+    //    gui.buildGui();
 
-            switch (input){
-                case "q":
-                    System.out.println("Do you want to turn off the server?[y/n]");
-                    input=sc.nextLine();
-                    switch (input){
-
-                        case "y":
-                            System.exit(0);
-                        case "n":
-                            break;
-                    }
-               /* case "get_all":
-                    for (Thread thread : threads.keySet()) {
-                        System.out.println(thread);}
-                    break;*/
-                    case "?":
-                    System.out.println("\"q\" to turn of the server\n" +
-                            /*"\"stop\" to suspend all client\n" +
-                            "\"cont\" to continue all client\n" +*/
-                            "\"get_all_clients\" to show all connected clients");
-                    break;
-                case "cont":
-                        notifyAll();
-                        break;
-                /*case "stop":
-                    try{
-                       synchronized (this){for (Thread thread : threads) {
-                            thread.wait();}
-                    }
-                    }catch (InterruptedException e){}
-                    System.out.println("All client is suspend");
-                    break;*/
-                case "get_all_clients":
-                    for (NewClient cl : Clients) {
-                        System.out.println(cl.getName());
-
-                    }
-                    break;
-                    default:
-                        System.out.println("Unknown command");
-
-            }
-            Commands.write(pl.Mo);
-        }
 
     }
 }

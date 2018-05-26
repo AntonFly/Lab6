@@ -71,11 +71,12 @@ public  class Commands {
     }
     public synchronized static String remove(CopyOnWriteArrayList<portret> Pl, String data) throws FormatEx{
         if( Commands.checkString(data)){if (Integer.valueOf(data)>Pl.size()){
-            throw new FormatEx();
+               throw new FormatEx();
         }else{
         //System.out.println(Parse.serialize(Pl.get(Integer.valueOf(data)-1)));
         portret o=Pl.get(Integer.valueOf(data)-1);
         Pl.remove(o);
+        ServerGui.initPrtTable();
         return "Object number "+Integer.valueOf(data)+" is deleted";}
         }
         else
@@ -87,8 +88,10 @@ public  class Commands {
         if(data.equals(null)||data.equals("")){f=false;}
         if (f){
             return ("ERROR command's format.");
-        }else
-        return ("Количество объектов в коллекции = "+Pl.size());
+        }else{
+            ServerGui.initClientTable();
+            return String.valueOf(Pl.size());
+        }
     }
     /**
      * Заполняет коллекцию объектами типа portret 
@@ -98,25 +101,35 @@ public  class Commands {
      */
     public synchronized static String read(CopyOnWriteArrayList<portret> Pl) throws XmlExeption{
        // System.out.println("1");
+        Pl.clear();
             try  {
                 BufferedReader br = new BufferedReader(new FileReader(System.getenv("objects")));
                 String s1;
 
                 while ((s1 = br.readLine()) != null) {
                     Parse.deserializeXML(s1);
-                    Pl.add(new portret(Parse.Name, Parse.Date, Parse.Size, Parse.Location));
+                    portret portret=new portret(Parse.Name, Parse.Date, Parse.Size, Parse.Location,Parse.COLOUR, Parse.X, Parse.Y );
+                    Pl.add(portret);
+//                    String[] data={
+//                            portret.NAME,
+//                            portret.DATE,
+//                            String.valueOf(portret.SIZE),
+//                            portret.LOCATION,
+//                            portret.COLOUR,
+//                            String.valueOf(portret.X),
+//                            String.valueOf(portret.Y)
+//                    };
+//                    FramesPanels.model.addRow(data);
+//                    FramesPanels.AddRow(portret);
                 }
             }
-            catch (XmlExeption e){
-                System.err.println(e);
-            }
+
             /*catch (IOException e){
                 System.out.println("Не удается найти указанный файл");
                 System.exit(0);
             }*/
-            catch (Exception ex) {
-                return ("Smth wrong with XML format\n" +
-                        "PlS, delete \"carriage return\" at the end and at the begining of the file!!!");
+            catch (Exception e){
+                e.printStackTrace();
             }
 
 
@@ -150,7 +163,10 @@ public  class Commands {
 
 
                     }
-                    if (f==true)    return ("Elements are removed");
+                    if (f==true){
+                        ServerGui.initPrtTable();
+                        return ("Elements are removed");
+                    }
                     else
                         return ("No such elements");
         }
@@ -172,7 +188,7 @@ public  class Commands {
             Pl.add(pr);
             output="Object is added";
             //Pl.sort(portret::compareTo);
-
+            ServerGui.AddRowPrt(pr);
         return output;
 
     }
@@ -190,7 +206,7 @@ public  class Commands {
             Double min=2147483647.;
             for(int i=0; i<Pl.size();i++){
                 if (Pl.get(i).SIZE<min){
-                    min=Pl.get(i).SIZE;
+                    min=(double)Pl.get(i).SIZE;
                 }
 
             }
@@ -198,6 +214,7 @@ public  class Commands {
                 Pl.add(pr);
                 output= "Object is added";
               //  Pl.sort(portret::compareTo);
+                ServerGui.AddRowPrt(pr);
 
             }
             else {
@@ -240,6 +257,7 @@ public  class Commands {
     public synchronized static String removeLast(CopyOnWriteArrayList<portret> Pl){
         int length=Pl.size();
         Pl.remove(length-1);
+        ServerGui.initPrtTable();
         return ("Element is removed");
     }
 

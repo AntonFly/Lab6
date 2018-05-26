@@ -9,17 +9,24 @@ public  class SampleServer //extends Thread
     public static List<NewClient> Clients = new ArrayList();
     //public  static List<Thread> threads = new ArrayList<>();
      public static Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
-    public static void main(String args[])
-    {
+    public static void main(String args[]) throws InterruptedException {
         //создание коллекции и заполнение
         PortretList pl= new PortretList();
+        ServerGui gui= new ServerGui(pl,Clients);
+        gui.setVisible(true);
+        gui.initComponents();
 
+//        new Thread(new ServerCommands(pl,Clients,threads)).start();
+        //Thread.sleep(1000);
+        //System.out.println("1");
         try {
             Commands.read(pl.Mo);
         }
         catch (XmlExeption e){
             System.out.println(e);
         }
+        gui.initPrtTable();
+//        FramesPanels.rep();
         try
         {   //инициализация сокета
             ServerSocket server = new ServerSocket(5682, 0,
