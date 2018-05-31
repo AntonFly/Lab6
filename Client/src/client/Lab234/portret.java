@@ -1,13 +1,16 @@
 package client.Lab234;
 
+import server.Parse;
+
+import java.awt.*;
 import java.io.Serializable;
 
 public class portret implements Comparable<portret>,Serializable{
     public String eye,nose,lip,location,name,date;
-public String DATE,LOCATION,NAME,COLOUR;
+public String DATE,LOCATION,NAME;
+public Color COLOUR;
 public int SIZE;
 public int X,Y;
-    public Double size;
     public portret(String name, String Date, int size, String location, String COLOUR, int X, int Y){
         this.DATE=Date;
         this.NAME=name;
@@ -15,7 +18,7 @@ public int X,Y;
         this.LOCATION=location;
         this.X=X;
         this.Y=Y;
-        this.COLOUR=COLOUR;
+        this.COLOUR= Parse.getCOLOUR(COLOUR);
     }
    /* public portret(String name, String eye,String nose,String lip){
         this.eye=eye;

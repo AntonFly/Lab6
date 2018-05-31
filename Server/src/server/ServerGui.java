@@ -1,14 +1,17 @@
 package server;
 
 import Lab234.portret;
+//import sun.security.mscapi.KeyStore;
 
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
 import java.util.List;
 import javax.swing.table.*;
-
+import javax.swing.border.Border;
 
 public class ServerGui extends JFrame {
     static PortretList pl;
@@ -104,6 +107,10 @@ public class ServerGui extends JFrame {
     }
 
 
+    private void button1ActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+    //Создание интерфейса
     public void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - Anton Avramenko
@@ -124,7 +131,8 @@ public class ServerGui extends JFrame {
         menuItem1 = new JMenuItem();
         menuItem2 = new JMenuItem();
         menuItem3 = new JMenuItem();
-
+        MyRenderer rend= new MyRenderer(false);
+        //table1.setDefaultRenderer(String.class,rend);
         //======== this ========
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -200,13 +208,42 @@ public class ServerGui extends JFrame {
                     new Object[][] {
                     },
                     new String[] {
+                            "ИД",
                         "\u041a\u043b\u0438\u0435\u043d\u0442"
                     }
                 );
+                //table1.setDefaultRenderer(String.class,rend);
                 table1.setModel(modeltable1);
                 table1.setPreferredSize(new Dimension(250, 600));
                 table1.setMaximumSize(new Dimension(250, 600));
+                table1.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) { }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                            if (e.getButton() ==MouseEvent.BUTTON3){
+                                Point point= e.getPoint();
+                                int column = table1.columnAtPoint(point);
+                                int row = table1.rowAtPoint(point);
+                                table1.setColumnSelectionInterval(column,column);
+                                table1.setRowSelectionInterval(row,row);
+                                new PopUp(row,table1).show((Component)e.getSource(),e.getX(),e.getY());
+                            }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) { }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) { }
+                });
                 scrollPane1.setViewportView(table1);
+
             }
             panel1.add(scrollPane1, BorderLayout.CENTER);
 
@@ -299,18 +336,19 @@ public class ServerGui extends JFrame {
     private JMenuItem menuItem2;
     private JMenuItem menuItem3;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-//    public  static  void rep(){
-//        contentPane.repaint();
-//        contentPane.revalidate();
-    //}
+
+    // Метод заполнения таблицы коллекции
     public static   void initPrtTable(){
+        for(int i=modeltable2.getRowCount()-1;i>=0;--i){
+            modeltable2.removeRow(i);
+        }
         for (portret portret: pl.Mo) {
             String[] data={
                     portret.NAME,
                     portret.DATE,
                     String.valueOf(portret.SIZE),
                     portret.LOCATION,
-                    portret.COLOUR,
+                    Parse.getColourName(Parse.getCOLOUR(portret.COLOUR)),
                     String.valueOf(portret.X),
                     String.valueOf(portret.Y)
             };
@@ -322,34 +360,261 @@ public class ServerGui extends JFrame {
      //   contentPane.revalidate();
         table2.updateUI();
     }
+    // добавление строки коллекции
     public static void AddRowPrt(portret portret){
         String[] data={
                 portret.NAME,
                 portret.DATE,
                 String.valueOf(portret.SIZE),
                 portret.LOCATION,
-                portret.COLOUR,
+                Parse.getColourName(Parse.getCOLOUR(portret.COLOUR)),
                 String.valueOf(portret.X),
                 String.valueOf(portret.Y)
         };
         modeltable2.addRow(data);
         modeltable2.fireTableRowsInserted(modeltable2.getRowCount()-1,modeltable2.getRowCount()-1);
     }
+    //заполнение таблицы клиентов
     public  static  void initClientTable(){
         for(int i=table1.getRowCount()-1;i>=0;--i){
             modeltable1.removeRow(i);
         }
         for (NewClient client: Clients
                 ) {
-            modeltable1.addRow(new String[]{client.name});
+            modeltable1.addRow(new String[]{String.valueOf(client.num),client.name});
             modeltable1.fireTableRowsInserted(modeltable1.getRowCount()-1,modeltable1.getRowCount()-1);
         }
         modeltable2.fireTableDataChanged();
         table1.updateUI();
     }
+    //добавление строки клиента
     public  static  void addRawClient(NewClient client){
-            modeltable1.addRow(new String[]{client.name});
+            modeltable1.addRow(new String[]{String.valueOf(client.num),client.name});
             //contentPane.repaint();
             //contentPane.revalidate();
+    }
+    //Меню мышии таблица клиентов
+    class PopUp extends JPopupMenu {
+        JMenuItem ban;
+
+        public PopUp(int row, JTable table) {
+            ban = new JMenuItem("Ban!");
+            ban.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    //System.out.println(			table.getValueAt(row,0));
+                    for (int i = 0; i < SampleServer.Clients.size(); i++) {
+                        NewClient cl = SampleServer.Clients.get(i);
+                        int zn =Integer.valueOf(String.valueOf(table.getValueAt(row,0)));
+                        if (cl.num == /*Integer.parseInt((String)*/zn) {
+                            SampleServer.Clients.remove(i);
+                            modeltable1.removeRow(row);
+                            modeltable1.fireTableDataChanged();
+                            cl.banCl();
+                        }
+                    }
+
+                }
+
+            });
+
+
+
+            add(ban);
+        }
+    }
+
+
+    static class MyRenderer extends JLabel implements TableCellRenderer
+    {
+
+
+
+        Border unselectedBorder = null;
+        Border selectedBorder = null;
+        boolean isBordered = true;
+        Map<Integer,Color> map;
+
+        public MyRenderer(boolean isBordered)
+        {
+            this.isBordered = isBordered;
+            setOpaque(true); //MUST do this for background to show up.
+            map = new HashMap<Integer,Color>();
+        }
+        public void setCurColourRow(Color colour,int row)
+        {
+            map.put(row,colour);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value,boolean isSelected, boolean hasFocus,int row, int column)
+        {
+            System.out.println("Xm"+row);
+            setText(new String(value.toString()));
+            setForeground(Color.BLACK);
+            setBackground(Color.white);
+
+            Set entrySet = map.entrySet();
+            Iterator it = entrySet.iterator();
+
+            while(it.hasNext())
+            {
+                Map.Entry me = (Map.Entry)it.next();
+                System.out.println(((Integer)me.getKey()) == row);
+                if(((Integer)me.getKey()) == row)
+                {
+                    Color newColor = Color.RED;//(Color)color;
+                    setForeground(Color.BLACK);
+                    setBackground((Color)me.getValue());
+                    if (isBordered)
+                    {
+                        if (isSelected)
+                        {
+                            if (selectedBorder == null)
+                            {
+                                selectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
+                                        table.getSelectionBackground());
+
+                            }
+                            setBorder(selectedBorder);
+                        } else
+                        {
+                            if (unselectedBorder == null)
+                            {
+                                unselectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
+                                        table.getBackground());
+                            }
+                            setBorder(unselectedBorder);
+                        }
+                    }
+
+                    setToolTipText("RGB value: " + newColor.getRed() + ", "
+                            + newColor.getGreen() + ", "
+                            + newColor.getBlue());
+                    if(me.getValue() == null)
+                        it.remove();
+
+                    return this;
+                }
+            }
+            return this;
+        }
+    }
+    public static class Colouring
+    {
+        private static Color color;
+        public static void createColour(JFrame frame)
+        {
+            JFrame colourFrame = new JFrame("Server colouring");
+            JPanel colourPanel = new JPanel(new GridLayout(3,3));
+            JSlider slider1 = new JSlider(0, 255, 5);
+            slider1.setMinorTickSpacing(5);
+            JSlider slider2 = new JSlider(0, 255, 5);
+            slider2.setMinorTickSpacing(5);
+            JSlider slider3 = new JSlider(0, 255, 5);
+            slider3.setMinorTickSpacing(5);
+            colourFrame.getContentPane().add(BorderLayout.NORTH,slider1 );
+            colourFrame.getContentPane().add(BorderLayout.CENTER,slider2 );
+            colourFrame.getContentPane().add(BorderLayout.SOUTH,slider3 );
+
+
+            colourFrame.setSize(250,200);
+            colourFrame.setVisible(true);
+
+        }
+
+        public static void setColour(int num)
+        {
+
+        }
+
+        public static Color getColour(String col)
+        {
+            switch (col.toLowerCase())
+            {
+                case "black":
+                    color = Color.BLACK;
+                    break;
+                case "blue":
+                    color = Color.BLUE;
+                    break;
+                case "cyan":
+                    color = Color.CYAN;
+                    break;
+                case "gray":
+                    color = Color.GRAY;
+                    break;
+                case "green":
+                    color = Color.GREEN;
+                    break;
+                case "yellow":
+                    color = Color.YELLOW;
+                    break;
+                case "orange":
+                    color = Color.ORANGE;
+                    break;
+                case "pink":
+                    color = Color.PINK;
+                    break;
+                case "red":
+                    color = Color.RED;
+                    break;
+                case "white":
+                    color = Color.WHITE;
+                    break;
+            }
+            return color;
+        }
+        public static String getColourStr(Color colour)
+        {
+
+            if(colour.equals(Color.BLACK))
+                return "black";
+            if(colour.equals(Color.BLUE))
+                return "blue";
+            if(colour.equals(Color.CYAN))
+                return "cyan";
+            if(colour.equals(Color.GRAY))
+                return "gray";
+            if(colour.equals(Color.GREEN))
+                return "green";
+            if(colour.equals(Color.YELLOW))
+                return "yellow";
+            if(colour.equals(Color.ORANGE))
+                return "orange";
+            if(colour.equals(Color.PINK))
+                return "pink";
+            if(colour.equals(Color.RED))
+                return "red";
+            if(colour.equals(Color.WHITE))
+                return "white";
+
+            return "";
+        }
+
+        public static void setTableColor(int id,JTable table,Color colour)
+        {
+            for(int i = 0;i< SampleServer.Clients.size();i++)
+            {
+                if( id  == (Integer.valueOf(String.valueOf(table.getValueAt(i,0)))))
+                {
+                    //			Component comp = table.getCellRenderer(i,0).getTableCellRendererComponent(table, table.getValueAt(i,0), false, false, i , 0);//getDefaultRenderer(Class.String).getTableCellRendererComponent(table, table.getValueAt(i,0), false, false, i , 0);
+                    //			comp.setForeground(colour);
+                    //			table.updateUI();
+                    TableCellRenderer buffer =  table.getCellRenderer(i,0);
+//                    ServerGui.MyRenderer ren =  buffer;
+//                   if(ren instanceof MyRenderer)
+//                        System.out.println("DSDASDASD");
+				        table.getCellRenderer(i,0);
+                  //  ren.setCurColourRow(colour,i);
+//				((AbstractTableModel)table.getModel()).fireTableDataChanged();
+                    ((AbstractTableModel)table.getModel()).fireTableCellUpdated(i,0);
+                    table.updateUI();
+                }
+            }
+
+        }
+
+    }
+    public static void changeColor(int id, Color colour){
+        Colouring.setTableColor(id,table1,colour);
     }
 }

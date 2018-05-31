@@ -22,8 +22,11 @@ public class MMenu {
         public void actionPerformed(ActionEvent e) {
             try{
                 s.getOutputStream().write("save".getBytes("UTF-8"));
+                Canvas.repaintCanvas();
             }catch (Exception y){
-                y.printStackTrace();
+                JOptionPane.showMessageDialog(null, "You are banned!");
+                System.exit(1);
+//                y.printStackTrace();
             }
         }
     });
@@ -49,7 +52,9 @@ public class MMenu {
                 s.getInputStream().read(buf);
                 FramesPanels.Jcount(new String(buf,"UTF-8"));
             }catch (Exception y){
-                y.printStackTrace();
+                JOptionPane.showMessageDialog(null, "You are banned!");
+                System.exit(1);
+//                y.printStackTrace();
             }
         }
     });
@@ -60,7 +65,9 @@ public class MMenu {
                 try{
                     s.getOutputStream().write("sortN".getBytes("UTF-8"));
                 }catch (Exception s){
-                    s.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "You are banned!");
+                    System.exit(1);
+//                    s.printStackTrace();
                 }
             }
         });
@@ -70,7 +77,9 @@ public class MMenu {
                 try{
                     s.getOutputStream().write("sort".getBytes("UTF-8"));
                 }catch (Exception s){
-                    s.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "You are banned!");
+                    System.exit(1);
+//                    s.printStackTrace();
                 }
             }
         });
@@ -80,8 +89,11 @@ public class MMenu {
             public void actionPerformed(ActionEvent e) {
                 try{
                     s.getOutputStream().write("remove_last".getBytes("UTF-8"));
+                    Canvas.repaintCanvas();
                 }catch (Exception s){
-                    s.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "You are banned!");
+                    System.exit(1);
+//                    s.printStackTrace();
                 }
             }
         });

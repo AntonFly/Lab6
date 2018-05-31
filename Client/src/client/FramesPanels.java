@@ -1,16 +1,24 @@
 package client;
 
+import Lab234.portret;
+import server.Parse;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.Socket;
 
 public class FramesPanels {
+    public static Canvas canvas;
   public   static JFrame getJmain(String name){
         JFrame jfreme= new JFrame();
         jfreme.setResizable(false);
@@ -110,7 +118,8 @@ public class FramesPanels {
                     String anser= new String(buf,"UTF-8");
                     ta.setText(anser);
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "You are banned!");
+                    System.exit(1);
                 }
             }
         });
@@ -122,230 +131,254 @@ public class FramesPanels {
         return panel;
     }
     public static JPanel Jparam (Socket s,int X,int Y){
+        final int[] Size = new int[1];
+        final int[] Sizem = new int[1];
+        final int[] xm = new int[1];
+        final int[] x = new int[1];
+        final int[] y = new int[1];
+        final int[] Ym = new int[1];
         JPanel mainpanel= new JPanel();
         mainpanel.setPreferredSize(new Dimension(X,Y*2/3));
         GridBagLayout gridBagLayout= new GridBagLayout();
         mainpanel.setLayout(gridBagLayout);
         GridBagConstraints c =new GridBagConstraints();
-        Color colour=Color.cyan;
-        mainpanel.setBackground(colour);
+        final Color[] colour = {Color.cyan};
+        mainpanel.setBackground(colour[0]);
         mainpanel.revalidate();
         String[] items={
-                "Красный",
-                "Белый",
-                "Черный",
-                "Зеленый",
-                "Синий",
-                "Желный",
-                "Розовый",
-                "Голубой"
+                "red",
+                "white",
+                "black",
+                "green",
+                "blue",
+                "yellow",
+                "pink",
+                "blue"
         };
         JLabel colourlb= new JLabel("Цвет:");
         JComboBox colourcb=new JComboBox(items);
-        colourcb.setMaximumSize(new Dimension(100,25));
+        colourcb.setMaximumSize(new Dimension(200,25));
         colourcb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                 String colour=(String)colourcb.getSelectedItem();
+                  colour[0] =Parse.getCOLOUR((String) colourcb.getSelectedItem());
             }
         });
-        JLabel sizelb= new JLabel("Размер:");
-        JSlider sizeSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
+        JLabel sizelb= new JLabel("Размер минимум:");
+        JSlider sizeSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         sizeSl.setMajorTickSpacing(10);
         sizeSl.setMinorTickSpacing(5);
         sizeSl.setPaintTicks(true);
         sizeSl.setPaintLabels(true);
-        sizeSl.setBackground(colour);
-        sizeSl.addAncestorListener(new AncestorListener() {
+        sizeSl.setBackground(colour[0]);
+        sizeSl.setMinimumSize(new Dimension(200,50));
+        sizeSl.addChangeListener(new ChangeListener() {
             @Override
-            public void ancestorAdded(AncestorEvent event) {
-                int Size=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                int Size=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-                int Size=sizeSl.getValue();
+            public void stateChanged(ChangeEvent e) {
+                Size[0] =sizeSl.getValue();
             }
         });
+
+        JLabel sizelbm= new JLabel("Размер максимум:");
+        JSlider sizeSlm= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        sizeSlm.setMajorTickSpacing(10);
+        sizeSlm.setMinorTickSpacing(5);
+        sizeSlm.setPaintTicks(true);
+        sizeSlm.setPaintLabels(true);
+        sizeSlm.setBackground(colour[0]);
+        sizeSlm.setMinimumSize(new Dimension(200,50));
+        sizeSlm.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Sizem[0] =sizeSlm.getValue();
+            }
+        });
+
         JLabel Xlb= new JLabel("X минимальный:");
-        JSlider XSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
-        XSl.setBackground(colour);
+        JSlider XSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        XSl.setBackground(colour[0]);
         XSl.setMajorTickSpacing(10);
         XSl.setMinorTickSpacing(5);
         XSl.setPaintTicks(true);
         XSl.setPaintLabels(true);
-        XSl.addAncestorListener(new AncestorListener() {
+        XSl.setMinimumSize(new Dimension(200,50));
+        XSl.addChangeListener(new ChangeListener() {
             @Override
-            public void ancestorAdded(AncestorEvent event) {
-                int X=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                int X=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-                int X=sizeSl.getValue();
+            public void stateChanged(ChangeEvent e) {
+                x[0] =XSl.getValue();
             }
         });
+
         JLabel Xmlb= new JLabel("X максимальный:");
-        JSlider XmSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
-        XmSl.setBackground(colour);
+        JSlider XmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        XmSl.setBackground(colour[0]);
         XmSl.setMajorTickSpacing(10);
         XmSl.setMinorTickSpacing(5);
         XmSl.setPaintTicks(true);
         XmSl.setPaintLabels(true);
-        XmSl.addAncestorListener(new AncestorListener() {
+        XmSl.setMinimumSize(new Dimension(200,50));
+        XmSl.addChangeListener(new ChangeListener() {
             @Override
-            public void ancestorAdded(AncestorEvent event) {
-                int Xm=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                int Xm=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-                int Xm=sizeSl.getValue();
+            public void stateChanged(ChangeEvent e) {
+                xm[0] =XmSl.getValue();
             }
         });
+
         JLabel Ylb= new JLabel("Y минимальный:");
-        JSlider YSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
-        YSl.setBackground(colour);
+        JSlider YSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        YSl.setBackground(colour[0]);
         YSl.setMajorTickSpacing(10);
         YSl.setMinorTickSpacing(5);
         YSl.setPaintTicks(true);
         YSl.setPaintLabels(true);
-        YSl.addAncestorListener(new AncestorListener() {
+        YSl.setMinimumSize(new Dimension(200,50));
+        YSl.addChangeListener(new ChangeListener() {
             @Override
-            public void ancestorAdded(AncestorEvent event) {
-                int y=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                int y=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-                int y=sizeSl.getValue();
+            public void stateChanged(ChangeEvent e) {
+                y[0] =YSl.getValue();
             }
         });
+
         JLabel Ymlb= new JLabel("Y максимальный:");
-        JSlider YmSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
-        YmSl.setBackground(colour);
+        JSlider YmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        YmSl.setBackground(colour[0]);
         YmSl.setMajorTickSpacing(10);
         YmSl.setMinorTickSpacing(5);
         YmSl.setPaintTicks(true);
         YmSl.setPaintLabels(true);
-        YmSl.addAncestorListener(new AncestorListener() {
+        YmSl.setMinimumSize(new Dimension(200,50));
+        YmSl.addChangeListener(new ChangeListener() {
             @Override
-            public void ancestorAdded(AncestorEvent event) {
-                int Ym=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                int Ym=sizeSl.getValue();
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-                int Ym=sizeSl.getValue();
+            public void stateChanged(ChangeEvent e) {
+                Ym[0] =YmSl.getValue();
             }
         });
+
         JButton start=new JButton("Поиск");
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (start.getText().equals("Поиск"))
-                    start.setText("Стоп");
+                {start.setText("Стоп");
+                for (PortretButton pb:ClienGui.buttons) {
+                    Color color = Parse.getCOLOUR(pb.portret.COLOUR);
+                    if ((pb.portret.SIZE>=Size[0]  ) &&
+                            (pb.portret.SIZE <= Sizem[0]) &&
+                            (color==colour[0]) &&
+                            (pb.portret.X >= x[0]) &&
+                            (pb.portret.X <= xm[0]) &&
+                            (pb.portret.Y >= y[0]) &&
+                            (pb.portret.Y <= Ym[0])) {
+                        new Thread(new changeThread(color, pb)).start();
+
+
+
+                    }
+                }
+                }
                 else start.setText("Поиск");
+
             }
         });
-        //mainpanel.add(new Joval())
-        Graph g = new Graph(40);
-        //g.add(new Joval(SampleClient.portretList.Mo.get(2)));
-        //g.drowObj(SampleClient.portretList.Mo.get(2));
-        g.setMinimumSize(new Dimension(700, 450));
-        g.setPreferredSize(g.getMinimumSize());
+
+
+        canvas = new Canvas(50);
+
+        canvas.setPreferredSize(new Dimension(700, 700));
+        JScrollPane jScrollPane =new JScrollPane(canvas);
+        jScrollPane.setMinimumSize(new Dimension(X*2/3,Y*3/5));
         c.gridx=0;
         c.gridy=0;
         c.gridheight=10;
         c.gridwidth=10;
         c.insets= new Insets(10,0,0,0);
-        mainpanel.add(g,c);
+        mainpanel.add(jScrollPane,c);
+
         c.gridx=15;
-        c.gridy=5;
+        c.gridy=2;
         c.gridheight=1;
         c.gridwidth=1;
-        c.insets= new Insets(80,28,10,0);
+        c.insets= new Insets(50,28,10,0);
         mainpanel.add(colourlb,c);
+
+        c.gridx=17;
+        c.gridy=2;
+        c.gridheight=1;
+        c.gridwidth=1;
+        c.insets= new Insets(50,18,10,0);
+        mainpanel.add(colourcb,c);
+
+        c.gridx=15;
+        c.gridy=5;
+        c.gridheight=1;
+        c.gridwidth=1;
+        c.insets= new Insets(10,40,0,0);
+        mainpanel.add(sizelb,c);
+
         c.gridx=17;
         c.gridy=5;
         c.gridheight=1;
         c.gridwidth=1;
-        c.insets= new Insets(80,18,10,0);
-        mainpanel.add(colourcb,c);
-        c.gridx=15;
-        c.gridy=8;
-        c.gridheight=1;
-        c.gridwidth=1;
-        c.insets= new Insets(40,40,10,0);
-        mainpanel.add(sizelb,c);
-        c.gridx=17;
-        c.gridy=8;
-        c.gridheight=1;
-        c.gridwidth=1;
-        c.insets= new Insets(40,30,0,0);
+        c.insets= new Insets(10,30,0,0);
         mainpanel.add(sizeSl,c);
+
+        c.gridx=15;
+        c.gridy=7;
+        c.insets= new Insets(10,40,0,0);
+        mainpanel.add(sizelbm,c);
+
+        c.gridx=17;
+        c.gridy=7;
+        c.gridheight=1;
+        c.gridwidth=1;
+        c.insets= new Insets(10,30,0,0);
+        mainpanel.add(sizeSlm,c);
+
         c.gridx=0;
         c.gridy=11;
         c.gridheight=1;
         c.gridwidth=1;
-        c.insets= new Insets(15,0,10,0);
+        c.insets= new Insets(5,0,0,0);
         mainpanel.add(Xlb,c);
+
         c.gridx=3;
         c.gridy=11;
-        c.insets= new Insets(20,5,10,0);
+        c.insets= new Insets(5,5,10,0);
         mainpanel.add(XSl,c);
+
         c.gridx=0;
         c.gridy=13;
-        c.insets= new Insets(15,5,10,0);
+        c.insets= new Insets(5,5,10,0);
         mainpanel.add(Xmlb,c);
+
         c.gridx=3;
         c.gridy=13;
-        c.insets= new Insets(20,5,10,0);
+        c.insets= new Insets(5,5,10,0);
         mainpanel.add(XmSl,c);
+
         c.gridx=5;
         c.gridy=11;
-        c.insets= new Insets(15,10,10,0);
+        c.insets= new Insets(5,10,10,0);
         mainpanel.add(Ylb,c);
+
         c.gridx=7;
         c.gridy=11;
-        c.insets= new Insets(20,5,10,0);
+        c.insets= new Insets(5,5,10,0);
         mainpanel.add(YSl,c);
+
         c.gridx=5;
         c.gridy=13;
-        c.insets= new Insets(10,20,10,0);
+        c.insets= new Insets(5,20,10,0);
         mainpanel.add(Ymlb,c);
+
         c.gridx=7;
         c.gridy=13;
-        c.insets= new Insets(20,5,10,0);
+        c.insets= new Insets(5,5,10,0);
         mainpanel.add(YmSl,c);
+
         c.gridx=17;
-        c.gridy=9;
-        c.insets= new Insets(0,0,
+        c.gridy=8;
+        c.insets= new Insets(50,0,
                 0,0);
         mainpanel.add(start,c);
 //        rbottom.revalidate();
@@ -353,5 +386,133 @@ public class FramesPanels {
 //        rbottom.revalidate();
 //        ltop.revalidate();
         return mainpanel;
+    }
+}
+class Canvas extends JPanel{
+
+    private Graphics2D gr;
+    private int size;
+//private boolean staticDraw;
+
+     Canvas(int size){
+        super();
+        this.size = size;
+        this.setLayout(null);
+//this.staticDraw = staticDraw;
+    }
+    public void paintComponent(Graphics g) {
+        gr = (Graphics2D) g;
+
+        Rectangle2D field = new Rectangle2D.Double(0, 0, this.getWidth(), this.getHeight());
+        gr.setPaint(Color.LIGHT_GRAY);
+        gr.fill(field);
+
+        gr.setPaint(Color.DARK_GRAY);
+        gr.setStroke(new BasicStroke(0.2f));
+        for (int i = 0; i <= this.getWidth(); i+=size){
+            gr.draw(new Line2D.Double(0, i, this.getWidth(), i));
+            gr.draw(new Line2D.Double(i, 0, i, this.getHeight()));
+        }
+
+        for(int i = 0; i <= this.getWidth(); i+=size)
+            gr.drawString(""+i, i-10, 10);
+        gr.drawString("X", 25,10);
+        for(int i = 0; i <= this.getHeight(); i+=size)
+            gr.drawString(""+i, 4, i-1);
+        gr.drawString("Y", 5,25);
+
+        ClienGui.initButtons();
+        this.removeAll();
+
+        ClienGui.buttons.forEach((iem)-> {
+            this.add(iem);
+        });
+
+    }
+    public static void repaintCanvas() {
+        Colltime.getColl();
+        ClienGui.initButtons();
+        FramesPanels.canvas.removeAll();
+        ClienGui.buttons.forEach((iem) -> {
+            FramesPanels.canvas.add(iem);
+        });
+        FramesPanels.canvas.repaint();
+        FramesPanels.canvas.revalidate();
+        FramesPanels.canvas.updateUI();
+
+    }
+}
+class PortretButton extends JButton{
+    private int size;
+    public portret portret;
+
+    class ClothesBorder implements Border{
+        private int side;
+        private ClothesBorder(int side){
+            this.side = side;
+        }
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.fillOval(x , y, width, 2*height/3);
+            g.setColor(Color.BLACK);
+            g.drawOval(x , y, width, 2*height/3);
+
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.side + 1, this.side +1, this.side+1, this.side+1);
+        }
+
+        @Override
+        public boolean isBorderOpaque() {
+            return true;
+        }
+    }
+    public PortretButton(portret portret){
+        super("");
+        this.portret = portret;
+        this.size = portret.SIZE;
+        setBackground(Color.BLACK);
+        setForeground(Parse.getCOLOUR(portret.COLOUR));
+        setBounds(portret.X - Math.round(this.size/ 2), portret.Y - Math.round(this.size/2), this.size, this.size);
+        setBorder(new ClothesBorder(this.size));
+        setToolTipText(portret.NAME);
+        setOpaque(false);
+        setEnabled(false);
+    }
+    @Override
+    public void paintComponent(Graphics g) {
+        g.setColor(Parse.getCOLOUR(portret.COLOUR));
+        g.fillOval(portret.X - Math.round(size/ 2), portret.Y - Math.round(size/2), portret.SIZE, portret.SIZE/2);
+    }
+    public void change(Color col){
+        this.setBackground(col);
+
+    }
+}
+
+class changeThread implements Runnable{
+    Color prev;
+    PortretButton pb;
+    changeThread(Color prev, PortretButton pb){
+        this.pb=pb;
+        this.prev=prev;
+    }
+    @Override
+    public void run() {
+        pb.change(Color.white);
+        FramesPanels.canvas.repaint();
+        FramesPanels.canvas.revalidate();
+        FramesPanels.canvas.updateUI();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+     //   pb.change(prev);
+        FramesPanels.canvas.repaint();
+        FramesPanels.canvas.revalidate();
+        FramesPanels.canvas.updateUI();
     }
 }

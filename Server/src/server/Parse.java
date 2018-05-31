@@ -2,6 +2,8 @@ package server;
 import Lab234.portret;
 import com.google.gson.*;
 
+import java.awt.*;
+
 public class Parse {
     public static final Gson GSON= new GsonBuilder().setPrettyPrinting().create();
 
@@ -25,6 +27,29 @@ public class Parse {
                 parametrs[1] = parametrs[1].substring(1, parametrs[1].length() - 1);
                 switch (parametrs[0]) {
                     case "COLOUR":
+//                        switch (parametrs[1]){
+//                            case "white":
+//                                COLOUR=Color.white;
+//                                break;
+//                            case "red":
+//                                COLOUR=Color.red;
+//                                break;
+//                            case "green":
+//                                COLOUR=Color.green;
+//                                break;
+//                            case "blue":
+//                                COLOUR=Color.blue;
+//                                break;
+//                            case "black":
+//                                COLOUR=Color.black;
+//                                break;
+//                            case "yellow":
+//                                COLOUR=Color.yellow;
+//                                break;
+//                            case "pink":
+//                                COLOUR=Color.pink;
+//                                break;
+//                        }
                         COLOUR=parametrs[1];
                         break;
                     case "X":
@@ -70,10 +95,39 @@ public class Parse {
         else{
             str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + e.SIZE + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\"/>\n";
         }
+
         return str;
+    }
+    public static String getColourName(Color cl){
+        if (cl.equals(Color.red)){
+            return "red";
+        }
+        if (cl.equals(Color.white)){
+            return "white";
+        }
+        if (cl.equals(Color.green)){
+            return "green";
+        }
+        if (cl.equals(Color.yellow)){
+            return "yellow";
+        }
+        if (cl.equals(Color.black)){
+            return "black";
+        }
+        if (cl.equals(Color.pink)){
+            return "pink";
+        }
+        if (cl.equals(Color.blue)){
+            return "blue";
+        }
+        return "null";
     }
 
 
+//    @Override
+//    public String toString() {
+//        ;
+//    }
     /*static public void deserialaize(String comma) throws server.JasonException {
         int length = comma.length();
         if (comma.charAt(0) == '{' && comma.charAt(length - 1) == '}') {
@@ -126,4 +180,25 @@ public class Parse {
         } else throw new server.JasonException("Smth wrong with Json comand format");
     }*/
 
+
+
+    public static Color getCOLOUR(String COLOUR) {
+        switch (COLOUR){
+            case "white":
+                return Color.white;
+            case "red":
+                return Color.red;
+            case "green":
+                return Color.green;
+            case "blue":
+                return Color.blue;
+            case "black":
+                return Color.black;
+            case "yellow":
+                return Color.yellow;
+            case "pink":
+                return Color.pink;
+            default: return Color.BLACK;
+    }
+    }
 }

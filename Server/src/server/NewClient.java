@@ -1,16 +1,25 @@
 package server;
 
+import Lab234.portret;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 public class   NewClient implements Runnable{
     PortretList pl;
-    Socket s;
+    static Socket s;
     String name;
     int num;
     List<NewClient> Clients;
@@ -118,47 +127,62 @@ public class   NewClient implements Runnable{
                                 ServerGui.initClientTable();
                                 break;
                             case "getPortList":
+//                                ServerGui.changeColor(num, Color.green);
+                                ArrayList<portret> listToSend= new ArrayList<>();
+                                listToSend.addAll(pl.Mo);
                                 ObjectOutputStream oos= new ObjectOutputStream(os);
-                                oos.writeObject(pl);
+                                oos.writeObject(listToSend);
                                 //oos.flush();
                                 //oos.close();
                                 break;
                             case "get_all1":
+//                                ServerGui.changeColor(num, Color.green);
                                 Commands.get_all1(pl.Mo,perem);
                                 //System.out.println(Commands.get_all(pl.Mo,perem));
                                 break;
                             case "get_all":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.get_all(pl.Mo,perem).getBytes());
                               //System.out.println(Commands.get_all(pl.Mo,perem));
                                 break;
                             case "get":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.get(pl.Mo, perem).getBytes());
                                 break;
                             case "sort":
+//                                ServerGui.changeColor(num, Color.green);
                                 Commands.sort(pl.Mo).getBytes();
                                 break;
                             case "sortN":
+//                                ServerGui.changeColor(num, Color.green);
                                 Commands.sortN(pl.Mo).getBytes();
                                 break;
                             case "remove":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.remove(pl.Mo, perem).getBytes());
                                 break;
                             case "count":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.count(pl.Mo, perem).getBytes());
                                 break;
                             case "remove_last":
+//                                ServerGui.changeColor(num, Color.green);
                                 Commands.removeLast(pl.Mo).getBytes();
                                 break;
                             case "remove_all":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.removeAll(pl.Mo, perem).getBytes());
                                 break;
                             case "add":
+//                                ServerGui.changeColor(num, Color.green);
                                os.write(Commands.add(pl.Mo,perem).getBytes());
                                 break;
                             case "add_if_min":
+//                                ServerGui.changeColor(num, Color.green);
                                 os.write(Commands.add_if_min(pl.Mo,perem).getBytes());
                                 break;
                             case "save":
+//                                ServerGui.changeColor(num, Color.green);
                                 Commands.write(pl.Mo).getBytes();
                                 break;
 
@@ -195,4 +219,13 @@ public class   NewClient implements Runnable{
                 //System.out.println("init error: "+e); // вывод исключений
             }
     }
+    public static void banCl(){
+        try {
+            s.close();
+            //JOptionPane.showMessageDialog(null,"Вы забанены!","Ошибка", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,String.valueOf(e.getStackTrace()),"Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
+

@@ -6,6 +6,7 @@ import server.PortretList;
 import javax.swing.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -37,6 +38,8 @@ public class SampleClient extends Thread
                     }
                 }
             }
+            Colltime.getColl();
+//            NK.start();
             class ShutdownHook extends Thread {
 
                 public void run() {
@@ -54,9 +57,9 @@ public class SampleClient extends Thread
             Runtime.getRuntime().addShutdownHook(shutdownHook);
             // берём поток вывода и выводим туда первый аргумент
             // заданный при вызове, адрес открытого сокета и его порт
-            ClienGui cgi = new ClienGui(name, s);
+            ClienGui cgi = new ClienGui(name, s,portretList);
             cgi.buildGui();
-           // NK.start();
+          NK.start();
             Scanner in = new Scanner(System.in);
 
             String input;
@@ -89,9 +92,10 @@ public class SampleClient extends Thread
                 String retstr = new String(buf, "UTF-8");
                 // выводим ответ в консоль
                 System.out.println(retstr);
+                Canvas.repaintCanvas();
             }
         } catch (SocketException e) {
-            //System.out.println(e);
+            JOptionPane.showMessageDialog(null, "You are banned!");
             System.out.println("Server is not avaliable");
             System.exit(1);
         } catch (NoSuchElementException e) {
@@ -103,31 +107,50 @@ public class SampleClient extends Thread
     }
     }
 }
- class Colltime implements Runnable{
-    Socket s;
-    OutputStream os;
-    InputStream ins;
-        Colltime(OutputStream os, InputStream ins){
-            this.os=os;
-            this.ins=ins;
-        }
+ class Colltime implements Runnable {
+     Socket s;
+     static OutputStream os;
+     static InputStream ins;
+
+     Colltime(OutputStream os, InputStream ins) {
+         this.os = os;
+         this.ins = ins;
+     }
+
      @Override
      public void run() {
-         try {
-             while (true){
-                 byte buf[] = new byte[1024 * 1024];
-
-             //buf="getPortList".getBytes("UTF-8");
-             os.write("getPortList".getBytes("UTF-8"));
-             //s.getInputStream().read(buf)
-             ObjectInputStream ois=new ObjectInputStream(ins);
-             SampleClient.portretList=(PortretList)ois.readObject();
-             for (portret s:SampleClient.portretList.Mo) {
-                 System.out.println(s.NAME+" "+s.LOCATION);
-
-             }}
-         } catch (Exception e) {
-             e.printStackTrace();
+         while (true) {
+             getColl();
+             try {
+                 Thread.sleep(1000);
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
          }
      }
+
+     public static void getColl() {
+         try {
+
+             byte buf[] = new byte[1024 * 1024];
+             ArrayList<portret> received;
+             os.write("getPortList".getBytes("UTF-8"));
+             ObjectInputStream ois = new ObjectInputStream(ins);
+             received = (ArrayList<portret>) ois.readObject();
+             SampleClient.portretList.Mo.clear();
+             SampleClient.portretList.Mo.addAll(received);
+             for (portret s : SampleClient.portretList.Mo) {
+//                     System.out.println(s.NAME+" "+s.LOCATION);
+                 System.out.println("r");
+
+             }
+         } catch (Exception e) {
+             JOptionPane.showMessageDialog(null, "You are banned!");
+             System.exit(1);
+//             e.printStackTrace();
+         }
+
+     }
+
+
  }

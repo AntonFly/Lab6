@@ -1,18 +1,27 @@
 package client;
 
 
+import Lab234.portret;
+import server.PortretList;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClienGui {
     static String name;
     Socket s;
-     ClienGui(String name, Socket s){
+    static CopyOnWriteArrayList<portret> listToDraw;
+    public static CopyOnWriteArrayList<PortretButton> buttons = new CopyOnWriteArrayList<>();
+     ClienGui(String name, Socket s, PortretList pl){
          this.name=name;
          this.s=s;
+         this.listToDraw=pl.Mo;
      }
     public void buildGui() {
         JFrame JMain = FramesPanels.getJmain(name);
@@ -36,6 +45,14 @@ public class ClienGui {
         JMain.revalidate();
 
     }
+
+    public static void initButtons(){
+        buttons.clear();
+        listToDraw.forEach((item)->{
+            buttons.add(new PortretButton(item));
+        });
+    }
+
 
 
 
