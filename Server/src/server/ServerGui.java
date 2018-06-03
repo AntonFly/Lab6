@@ -15,13 +15,15 @@ import javax.swing.border.Border;
 
 public class ServerGui extends JFrame {
     static PortretList pl;
-    Color Colour=new Color(115, 196, 98);
+    Color Colour = new Color(115, 196, 98);
     static List<NewClient> Clients;
-    ServerGui(PortretList pl, List<NewClient> Clients){
-        this.pl=pl;
-        this.Clients= Clients;
+
+    ServerGui(PortretList pl, List<NewClient> Clients) {
+        this.pl = pl;
+        this.Clients = Clients;
     }
-//    public void buildGui(){
+    public static Map<Integer,Color> map;
+    //    public void buildGui(){
 //        JFrame JMain= FramesPanels.getJmain();
 //        JMenuBar menuBar =MMenu.JMbuild(pl);
 //        JMain.setJMenuBar(menuBar);
@@ -37,27 +39,29 @@ public class ServerGui extends JFrame {
     static Container contentPane;
     static DefaultTableModel modeltable2;
     static DefaultTableModel modeltable1;
+
     //Выход
     private void menuItem3ActionPerformed(ActionEvent e) {
         int dialogButton = JOptionPane.YES_NO_OPTION;
         int dialogResult = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите закрыть сервер?", "Выход", dialogButton);
-        if(dialogResult == 0) {
+        if (dialogResult == 0) {
             System.exit(0);
+        } else {
         }
-        else {}
     }
+
     //Загрузить
     private void menuItem1ActionPerformed(ActionEvent e) {
         int dialogButton = JOptionPane.YES_NO_OPTION;
         int dialogResult = JOptionPane.showConfirmDialog(null, "Загрузка коллекции с диска приведет к удалению\n" +
                 "всех изменений за последнии 30 секунд.\n" +
                 "Вы хотите продолжить?", "Загрузика коллекции", dialogButton);
-        if(dialogResult == 0) {
+        if (dialogResult == 0) {
             try {
-                for (int i=table2.getRowCount()-1;i>=0;--i){
+                for (int i = table2.getRowCount() - 1; i >= 0; --i) {
                     modeltable2.removeRow(i);
                 }
-                for (portret prt: pl.Mo) {
+                for (portret prt : pl.Mo) {
                     AddRowPrt(prt);
                 }
                 scrollPane5.revalidate();
@@ -70,18 +74,20 @@ public class ServerGui extends JFrame {
 
         }
     }
+
     //Сохранить
     private void menuItem2ActionPerformed(ActionEvent e) {
-        try{
+        try {
             Commands.write(pl.Mo);
-        }catch (Exception y){
+        } catch (Exception y) {
             y.printStackTrace();
         }
     }
+
     //Ввод команд
     private void textField1ActionPerformed(ActionEvent e) {
-        String text =textField1.getText();
-        switch (text){
+        String text = textField1.getText();
+        switch (text) {
             case "?":
                 textArea1.setText("\"q\" to turn of the server\n" +
                         "\"get_all_clients\" to show all connected clients");
@@ -91,7 +97,7 @@ public class ServerGui extends JFrame {
                 notifyAll();
                 break;
             case "get_all":
-                textArea1.setText(Commands.get_all(pl.Mo,""));
+                textArea1.setText(Commands.get_all(pl.Mo, ""));
                 break;
 //                        case "get_all_clients":
 //                            for (NewClient cl : Clients) {
@@ -111,6 +117,7 @@ public class ServerGui extends JFrame {
     private void button1ActionPerformed(ActionEvent e) {
         // TODO add your code here
     }
+
     //Создание интерфейса
     public void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -133,8 +140,8 @@ public class ServerGui extends JFrame {
         menuItem1 = new JMenuItem();
         menuItem2 = new JMenuItem();
         menuItem3 = new JMenuItem();
-        MyRenderer rend= new MyRenderer(false);
-        //table1.setDefaultRenderer(String.class,rend);
+        TableInfoRenderer tableInfoRenderer= new TableInfoRenderer();
+
         //======== this ========
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -149,10 +156,15 @@ public class ServerGui extends JFrame {
 
             // JFormDesigner evaluation mark
             panel3.setBorder(new javax.swing.border.CompoundBorder(
-                new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                    "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                    javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                    java.awt.Color.red), panel3.getBorder())); panel3.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                            "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                            javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                            java.awt.Color.red), panel3.getBorder()));
+            panel3.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+                public void propertyChange(java.beans.PropertyChangeEvent e) {
+                    if ("border".equals(e.getPropertyName())) throw new RuntimeException();
+                }
+            });
 
             panel3.setLayout(null);
 
@@ -181,7 +193,7 @@ public class ServerGui extends JFrame {
 
             { // compute preferred size
                 Dimension preferredSize = new Dimension();
-                for(int i = 0; i < panel3.getComponentCount(); i++) {
+                for (int i = 0; i < panel3.getComponentCount(); i++) {
                     Rectangle bounds = panel3.getComponent(i).getBounds();
                     preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                     preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -206,32 +218,33 @@ public class ServerGui extends JFrame {
             {
 
                 //---- table1 ----
-                modeltable1=new DefaultTableModel(
-                    new Object[][] {
-                    },
-                    new String[] {
-                            "ИД",
-                        "\u041a\u043b\u0438\u0435\u043d\u0442"
-                    }
+                modeltable1 = new DefaultTableModel(
+                        new Object[][]{
+                        },
+                        new String[]{
+                                "ИД",
+                                "\u041a\u043b\u0438\u0435\u043d\u0442"
+                        }
                 );
-                //table1.setDefaultRenderer(String.class,rend);
+                table1.setDefaultRenderer(Object.class,tableInfoRenderer);
                 table1.setModel(modeltable1);
                 table1.setPreferredSize(new Dimension(250, 600));
                 table1.setMaximumSize(new Dimension(250, 600));
                 table1.addMouseListener(new MouseListener() {
                     @Override
-                    public void mouseClicked(MouseEvent e) { }
+                    public void mouseClicked(MouseEvent e) {
+                    }
 
                     @Override
                     public void mousePressed(MouseEvent e) {
-                            if (e.getButton() ==MouseEvent.BUTTON3){
-                                Point point= e.getPoint();
-                                int column = table1.columnAtPoint(point);
-                                int row = table1.rowAtPoint(point);
-                                table1.setColumnSelectionInterval(column,column);
-                                table1.setRowSelectionInterval(row,row);
-                                new PopUp(row,table1).show((Component)e.getSource(),e.getX(),e.getY());
-                            }
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            Point point = e.getPoint();
+                            int column = table1.columnAtPoint(point);
+                            int row = table1.rowAtPoint(point);
+                            table1.setColumnSelectionInterval(column, column);
+                            table1.setRowSelectionInterval(row, row);
+                            new PopUp(row, table1).show((Component) e.getSource(), e.getX(), e.getY());
+                        }
                     }
 
                     @Override
@@ -239,10 +252,12 @@ public class ServerGui extends JFrame {
                     }
 
                     @Override
-                    public void mouseEntered(MouseEvent e) { }
+                    public void mouseEntered(MouseEvent e) {
+                    }
 
                     @Override
-                    public void mouseExited(MouseEvent e) { }
+                    public void mouseExited(MouseEvent e) {
+                    }
                 });
                 scrollPane1.setViewportView(table1);
 
@@ -266,14 +281,15 @@ public class ServerGui extends JFrame {
 
                 //---- table2 ----
                 table2.setPreferredSize(new Dimension(600, 32));
-                modeltable2= new DefaultTableModel(
-                    new Object[][] {
-                    },
-                    new String[] {
-                        "\u0418\u043c\u044f", "\u0414\u0430\u0442\u0430", "\u0420\u0430\u0437\u043c\u0435\u0440", "\u041c\u0435\u0441\u0442\u043e\u043f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435", "\u0426\u0432\u0435\u0442", "\u041a\u043e\u043e\u0440\u0434. X", "\u041a\u043e\u043e\u0440\u0434. Y"
-                    }
+                modeltable2 = new DefaultTableModel(
+                        new Object[][]{
+                        },
+                        new String[]{
+                                "\u0418\u043c\u044f", "\u0414\u0430\u0442\u0430", "\u0420\u0430\u0437\u043c\u0435\u0440", "\u041c\u0435\u0441\u0442\u043e\u043f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435", "\u0426\u0432\u0435\u0442", "\u041a\u043e\u043e\u0440\u0434. X", "\u041a\u043e\u043e\u0440\u0434. Y"
+                        }
                 );
                 table2.setModel(modeltable2);
+                //table2.setDefaultRenderer(Object.class,tableInfoRenderer);
                 {
                     TableColumnModel cm = table2.getColumnModel();
                     cm.getColumn(0).setPreferredWidth(70);
@@ -327,7 +343,7 @@ public class ServerGui extends JFrame {
     private JTextField textField1;
     private JPanel panel1;
     private JScrollPane scrollPane1;
-    private static JTable table1;
+    public static JTable table1;
     private JButton button1;
     private JPanel panel4;
     private JScrollPane scrollPane5;
@@ -340,12 +356,12 @@ public class ServerGui extends JFrame {
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     // Метод заполнения таблицы коллекции
-    public static   void initPrtTable(){
-        for(int i=modeltable2.getRowCount()-1;i>=0;--i){
+    public static void initPrtTable() {
+        for (int i = modeltable2.getRowCount() - 1; i >= 0; --i) {
             modeltable2.removeRow(i);
         }
-        for (portret portret: pl.Mo) {
-            String[] data={
+        for (portret portret : pl.Mo) {
+            String[] data = {
                     portret.NAME,
                     portret.DATE,
                     String.valueOf(portret.SIZE),
@@ -357,14 +373,15 @@ public class ServerGui extends JFrame {
             modeltable2.addRow(data);
             modeltable2.fireTableDataChanged();
         }
-        modeltable2.fireTableRowsInserted(modeltable2.getRowCount()-1,modeltable2.getRowCount()-1);
+        modeltable2.fireTableRowsInserted(modeltable2.getRowCount() - 1, modeltable2.getRowCount() - 1);
 //        contentPane.repaint();
-     //   contentPane.revalidate();
+        //   contentPane.revalidate();
         table2.updateUI();
     }
+
     // добавление строки коллекции
-    public static void AddRowPrt(portret portret){
-        String[] data={
+    public static void AddRowPrt(portret portret) {
+        String[] data = {
                 portret.NAME,
                 portret.DATE,
                 String.valueOf(portret.SIZE),
@@ -374,28 +391,31 @@ public class ServerGui extends JFrame {
                 String.valueOf(portret.Y)
         };
         modeltable2.addRow(data);
-        modeltable2.fireTableRowsInserted(modeltable2.getRowCount()-1,modeltable2.getRowCount()-1);
+        modeltable2.fireTableRowsInserted(modeltable2.getRowCount() - 1, modeltable2.getRowCount() - 1);
     }
+
     //заполнение таблицы клиентов
-    public  static  void initClientTable(){
-        for(int i=table1.getRowCount()-1;i>=0;--i){
+    public static void initClientTable() {
+        for (int i = table1.getRowCount() - 1; i >= 0; --i) {
             modeltable1.removeRow(i);
         }
-        for (NewClient client: Clients
+        for (NewClient client : Clients
                 ) {
-            modeltable1.addRow(new String[]{String.valueOf(client.num),client.name});
-            modeltable1.fireTableRowsInserted(modeltable1.getRowCount()-1,modeltable1.getRowCount()-1);
+            modeltable1.addRow(new String[]{String.valueOf(client.num), client.name});
+            modeltable1.fireTableRowsInserted(modeltable1.getRowCount() - 1, modeltable1.getRowCount() - 1);
         }
         modeltable2.fireTableDataChanged();
         table1.updateUI();
     }
+
     //добавление строки клиента
-    public  static  void addRawClient(NewClient client){
-            modeltable1.addRow(new String[]{String.valueOf(client.num),client.name});
-            //contentPane.repaint();
-            //contentPane.revalidate();
+    public static void addRawClient(NewClient client) {
+        modeltable1.addRow(new String[]{String.valueOf(client.num), client.name});
+        //contentPane.repaint();
+        //contentPane.revalidate();
     }
-    //Меню мышии таблица клиентов
+
+    //Меню мыши таблица клиентов
     class PopUp extends JPopupMenu {
         JMenuItem ban;
 
@@ -406,7 +426,7 @@ public class ServerGui extends JFrame {
                     //System.out.println(			table.getValueAt(row,0));
                     for (int i = 0; i < SampleServer.Clients.size(); i++) {
                         NewClient cl = SampleServer.Clients.get(i);
-                        int zn =Integer.valueOf(String.valueOf(table.getValueAt(row,0)));
+                        int zn = Integer.valueOf(String.valueOf(table.getValueAt(row, 0)));
                         if (cl.num == /*Integer.parseInt((String)*/zn) {
                             SampleServer.Clients.remove(i);
                             modeltable1.removeRow(row);
@@ -420,203 +440,69 @@ public class ServerGui extends JFrame {
             });
 
 
-
             add(ban);
         }
     }
-
-
-    static class MyRenderer extends JLabel implements TableCellRenderer
+    public static void changeColour(int id, Color colour)
     {
-
-
-
-        Border unselectedBorder = null;
-        Border selectedBorder = null;
-        boolean isBordered = true;
-        Map<Integer,Color> map;
-
-        public MyRenderer(boolean isBordered)
-        {
-            this.isBordered = isBordered;
-            setOpaque(true); //MUST do this for background to show up.
-            map = new HashMap<Integer,Color>();
-        }
-        public void setCurColourRow(Color colour,int row)
-        {
-            map.put(row,colour);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value,boolean isSelected, boolean hasFocus,int row, int column)
-        {
-            System.out.println("Xm"+row);
-            setText(new String(value.toString()));
-            setForeground(Color.BLACK);
-            setBackground(Color.white);
-
-            Set entrySet = map.entrySet();
-            Iterator it = entrySet.iterator();
-
-            while(it.hasNext())
-            {
-                Map.Entry me = (Map.Entry)it.next();
-                System.out.println(((Integer)me.getKey()) == row);
-                if(((Integer)me.getKey()) == row)
-                {
-                    Color newColor = Color.RED;//(Color)color;
-                    setForeground(Color.BLACK);
-                    setBackground((Color)me.getValue());
-                    if (isBordered)
-                    {
-                        if (isSelected)
-                        {
-                            if (selectedBorder == null)
-                            {
-                                selectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
-                                        table.getSelectionBackground());
-
-                            }
-                            setBorder(selectedBorder);
-                        } else
-                        {
-                            if (unselectedBorder == null)
-                            {
-                                unselectedBorder = BorderFactory.createMatteBorder(2,5,2,5,
-                                        table.getBackground());
-                            }
-                            setBorder(unselectedBorder);
-                        }
-                    }
-
-                    setToolTipText("RGB value: " + newColor.getRed() + ", "
-                            + newColor.getGreen() + ", "
-                            + newColor.getBlue());
-                    if(me.getValue() == null)
-                        it.remove();
-
-                    return this;
-                }
-            }
-            return this;
-        }
-    }
-    public static class Colouring
-    {
-        private static Color color;
-        public static void createColour(JFrame frame)
-        {
-            JFrame colourFrame = new JFrame("Server colouring");
-            JPanel colourPanel = new JPanel(new GridLayout(3,3));
-            JSlider slider1 = new JSlider(0, 255, 5);
-            slider1.setMinorTickSpacing(5);
-            JSlider slider2 = new JSlider(0, 255, 5);
-            slider2.setMinorTickSpacing(5);
-            JSlider slider3 = new JSlider(0, 255, 5);
-            slider3.setMinorTickSpacing(5);
-            colourFrame.getContentPane().add(BorderLayout.NORTH,slider1 );
-            colourFrame.getContentPane().add(BorderLayout.CENTER,slider2 );
-            colourFrame.getContentPane().add(BorderLayout.SOUTH,slider3 );
-
-
-            colourFrame.setSize(250,200);
-            colourFrame.setVisible(true);
-
-        }
-
-        public static void setColour(int num)
-        {
-
-        }
-
-        public static Color getColour(String col)
-        {
-            switch (col.toLowerCase())
-            {
-                case "black":
-                    color = Color.BLACK;
-                    break;
-                case "blue":
-                    color = Color.BLUE;
-                    break;
-                case "cyan":
-                    color = Color.CYAN;
-                    break;
-                case "gray":
-                    color = Color.GRAY;
-                    break;
-                case "green":
-                    color = Color.GREEN;
-                    break;
-                case "yellow":
-                    color = Color.YELLOW;
-                    break;
-                case "orange":
-                    color = Color.ORANGE;
-                    break;
-                case "pink":
-                    color = Color.PINK;
-                    break;
-                case "red":
-                    color = Color.RED;
-                    break;
-                case "white":
-                    color = Color.WHITE;
-                    break;
-            }
-            return color;
-        }
-        public static String getColourStr(Color colour)
-        {
-
-            if(colour.equals(Color.BLACK))
-                return "black";
-            if(colour.equals(Color.BLUE))
-                return "blue";
-            if(colour.equals(Color.CYAN))
-                return "cyan";
-            if(colour.equals(Color.GRAY))
-                return "gray";
-            if(colour.equals(Color.GREEN))
-                return "green";
-            if(colour.equals(Color.YELLOW))
-                return "yellow";
-            if(colour.equals(Color.ORANGE))
-                return "orange";
-            if(colour.equals(Color.PINK))
-                return "pink";
-            if(colour.equals(Color.RED))
-                return "red";
-            if(colour.equals(Color.WHITE))
-                return "white";
-
-            return "";
-        }
-
-        public static void setTableColor(int id,JTable table,Color colour)
-        {
-            for(int i = 0;i< SampleServer.Clients.size();i++)
-            {
-                if( id  == (Integer.valueOf(String.valueOf(table.getValueAt(i,0)))))
-                {
-                    //			Component comp = table.getCellRenderer(i,0).getTableCellRendererComponent(table, table.getValueAt(i,0), false, false, i , 0);//getDefaultRenderer(Class.String).getTableCellRendererComponent(table, table.getValueAt(i,0), false, false, i , 0);
-                    //			comp.setForeground(colour);
-                    //			table.updateUI();
-                    TableCellRenderer buffer =  table.getCellRenderer(i,0);
-//                    ServerGui.MyRenderer ren =  buffer;
-//                   if(ren instanceof MyRenderer)
-//                        System.out.println("DSDASDASD");
-				        table.getCellRenderer(i,0);
-                  //  ren.setCurColourRow(colour,i);
-//				((AbstractTableModel)table.getModel()).fireTableDataChanged();
-                    ((AbstractTableModel)table.getModel()).fireTableCellUpdated(i,0);
-                    table.updateUI();
-                }
-            }
-
-        }
-
-    }
-    public static void changeColor(int id, Color colour){
         Colouring.setTableColor(id,table1,colour);
     }
 }
+
+ class Colouring extends DefaultTableCellRenderer
+ {
+
+
+    public static void setTableColor(int id,JTable table,Color colour)
+    {
+        for(int i = 0;i< SampleServer.Clients.size();i++)
+        {
+            if( String.valueOf(id).equals(table.getValueAt(i,0)));
+            {
+
+//                MyRenderer ren = (MyRenderer)ServerGui.table1.getCellRenderer(i,0);
+                ServerGui.map.put(i,colour);
+                ((AbstractTableModel)table.getModel()).fireTableCellUpdated(i,0);
+                table.updateUI();
+            }
+        }
+
+    }
+
+}
+ class TableInfoRenderer extends DefaultTableCellRenderer {
+    int counter;
+
+     public TableInfoRenderer() {
+         ServerGui.map=new HashMap<Integer,Color>();
+     }
+
+     @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus, int row, int column) {
+        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, false, row, column);
+        c.setBackground(Color.white);
+        c.setForeground(Color.BLACK);
+
+        Set entrySet =ServerGui.map.entrySet();
+        Iterator it = entrySet.iterator();
+
+        while(it.hasNext())
+        {
+            Map.Entry me = (Map.Entry)it.next();
+            if(((Integer)me.getKey()) == row)
+            {
+                c.setForeground(Color.BLACK);
+                c.setBackground((Color)me.getValue());
+                counter++;
+                if(counter==2){
+                it.remove();}
+                return c;
+            }
+        }
+        return c;
+    }
+}
+
+
+

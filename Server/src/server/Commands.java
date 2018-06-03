@@ -91,7 +91,7 @@ public  class Commands {
         if (f){
             return ("ERROR command's format.");
         }else{
-            ServerGui.initClientTable();
+            ServerGui.initPrtTable();
             return String.valueOf(Pl.size());
         }
     }

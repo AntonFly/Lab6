@@ -127,68 +127,96 @@ public class   NewClient implements Runnable{
                                 ServerGui.initClientTable();
                                 break;
                             case "getPortList":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 ArrayList<portret> listToSend= new ArrayList<>();
                                 listToSend.addAll(pl.Mo);
                                 ObjectOutputStream oos= new ObjectOutputStream(os);
                                 oos.writeObject(listToSend);
                                 //oos.flush();
                                 //oos.close();
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "get_all1":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 Commands.get_all1(pl.Mo,perem);
                                 //System.out.println(Commands.get_all(pl.Mo,perem));
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "get_all":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.get_all(pl.Mo,perem).getBytes());
                               //System.out.println(Commands.get_all(pl.Mo,perem));
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "get":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.get(pl.Mo, perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "sort":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 Commands.sort(pl.Mo).getBytes();
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "sortN":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);;
                                 Commands.sortN(pl.Mo).getBytes();
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "remove":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.remove(pl.Mo, perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "count":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.count(pl.Mo, perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "remove_last":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 Commands.removeLast(pl.Mo).getBytes();
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "remove_all":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.removeAll(pl.Mo, perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "add":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                os.write(Commands.add(pl.Mo,perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "add_if_min":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 os.write(Commands.add_if_min(pl.Mo,perem).getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
                             case "save":
-//                                ServerGui.changeColor(num, Color.green);
+                                ServerGui.changeColour(num, Color.green);
                                 Commands.write(pl.Mo).getBytes();
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
                                 break;
 
                             default:
-                                //System.out.println((char) 27 + "[31mERROR!!! Unknown command " + (char)27 + "[0m");
+                                ServerGui.changeColour(num, Color.green);
                                 os.write("Unknown command".getBytes());
+                                Thread.sleep(500);
+                                ServerGui.changeColour(num, Color.white);
 
                         }
                         if(command.equals("closeClient"))break;

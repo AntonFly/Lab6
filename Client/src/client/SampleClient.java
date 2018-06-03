@@ -59,7 +59,7 @@ public class SampleClient extends Thread
             // заданный при вызове, адрес открытого сокета и его порт
             ClienGui cgi = new ClienGui(name, s,portretList);
             cgi.buildGui();
-        //  NK.start();
+            NK.start();
             Scanner in = new Scanner(System.in);
 
             String input;
@@ -122,7 +122,7 @@ public class SampleClient extends Thread
          while (true) {
              getColl();
              try {
-                 Thread.sleep(1000);
+                 Thread.sleep(5000);
              } catch (InterruptedException e) {
                  e.printStackTrace();
              }
