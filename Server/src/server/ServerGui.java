@@ -15,6 +15,7 @@ import javax.swing.border.Border;
 
 public class ServerGui extends JFrame {
     static PortretList pl;
+    Color Colour=new Color(115, 196, 98);
     static List<NewClient> Clients;
     ServerGui(PortretList pl, List<NewClient> Clients){
         this.pl=pl;
@@ -114,6 +115,7 @@ public class ServerGui extends JFrame {
     public void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - Anton Avramenko
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         panel3 = new JPanel();
         label1 = new JLabel();
         scrollPane4 = new JScrollPane();
@@ -142,7 +144,7 @@ public class ServerGui extends JFrame {
 
         //======== panel3 ========
         {
-            panel3.setBackground(new Color(153, 204, 255));
+            panel3.setBackground(Colour);
             panel3.setPreferredSize(new Dimension(932, 150));
 
             // JFormDesigner evaluation mark
@@ -196,7 +198,7 @@ public class ServerGui extends JFrame {
         //======== panel1 ========
         {
             panel1.setPreferredSize(new Dimension(300, 0));
-            panel1.setBackground(new Color(153, 204, 255));
+            panel1.setBackground(Colour);
             panel1.setAlignmentY(3.5F);
             panel1.setLayout(new BorderLayout());
 
@@ -255,7 +257,7 @@ public class ServerGui extends JFrame {
 
         //======== panel4 ========
         {
-            panel4.setBackground(new Color(153, 204, 255));
+            panel4.setBackground(Colour);
             panel4.setPreferredSize(new Dimension(400, 400));
             panel4.setLayout(new FlowLayout());
 

@@ -59,7 +59,7 @@ public class SampleClient extends Thread
             // заданный при вызове, адрес открытого сокета и его порт
             ClienGui cgi = new ClienGui(name, s,portretList);
             cgi.buildGui();
-          NK.start();
+        //  NK.start();
             Scanner in = new Scanner(System.in);
 
             String input;
@@ -139,11 +139,11 @@ public class SampleClient extends Thread
              received = (ArrayList<portret>) ois.readObject();
              SampleClient.portretList.Mo.clear();
              SampleClient.portretList.Mo.addAll(received);
-             for (portret s : SampleClient.portretList.Mo) {
-//                     System.out.println(s.NAME+" "+s.LOCATION);
-                 System.out.println("r");
-
-             }
+//             for (portret s : SampleClient.portretList.Mo) {
+////                     System.out.println(s.NAME+" "+s.LOCATION);
+//                 System.out.println("r");
+//
+//             }
          } catch (Exception e) {
              JOptionPane.showMessageDialog(null, "You are banned!");
              System.exit(1);

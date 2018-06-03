@@ -63,10 +63,12 @@ public  class Commands {
     }
     public synchronized static String sort(CopyOnWriteArrayList<portret> Pl){
         Pl.sort(portret::compareTo);
+        ServerGui.initPrtTable();
         return "Collection is sorted.";
     }
     public synchronized static String sortN(CopyOnWriteArrayList<portret> Pl){
         Pl.sort(portret::compareTo1);
+        ServerGui.initPrtTable();
         return "Collection is sorted by name.";
     }
     public synchronized static String remove(CopyOnWriteArrayList<portret> Pl, String data) throws FormatEx{

@@ -2,6 +2,7 @@ package client;
 
 import Lab234.portret;
 import server.Parse;
+import sun.plugin2.util.ColorUtil;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -16,8 +17,10 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class FramesPanels {
+    static ArrayList<Thread> startThreads= new ArrayList<>();
     public static Canvas canvas;
   public   static JFrame getJmain(String name){
         JFrame jfreme= new JFrame();
@@ -33,6 +36,7 @@ public class FramesPanels {
         //jfreme.setBackground(Color.cyan);
         return jfreme;
     }
+    //окно помощи( список возможных команд)
     public static JFrame Jhelp(){
         JFrame jfreme= new JFrame();
         jfreme.setVisible(true);
@@ -48,19 +52,16 @@ public class FramesPanels {
         JPanel htmlPanel = new JPanel();
         htmlPanel.setBorder(BorderFactory.createTitledBorder("Возможные команды"));
         Font font = new Font("TimesNewRoman", Font.BOLD, 14);
-        String text ="<html><p>Press 'q' to save and exit<br>\n" +
-                "\"save\" to save current collection<br>\n" +
+        String text ="<html><p>" +
                 "\"add_if_min{element}\" to add element if value of size is minimal<br>\n" +
                 "\"remove_all{element}\" to delete all elements equal to given<br>\n" +
-                "\"remove_last\" to delete last element of collection<br>\n" +
-                "\"start\" to launch a fairytale program<br>\n" +
                 "\"count\" to show a number of items in the collection<br>\n" +
                 "\"get №\" to show an element with introduced index<br>\n" +
                 "\"get_all\" to show all elements of collection<br>\n" +
                 "\"remove №\" to delete an element with introduced index<br>\n" +
                 "\"sort\" to sort collection<br>\n" +
                 "\"sortN\" to sort collection by name<br>\n" +
-                "\"add\" to sort collection by name</p></html>";
+                "</html>";
         JLabel htmlLabel = new JLabel();
         htmlLabel.setText(text);
         htmlLabel.setFont(font);
@@ -92,6 +93,7 @@ public class FramesPanels {
         jfreme.add(htmlPanel);
         return jfreme;
     }
+    //панель команд отправляемых серверу
     public static JPanel Jdiolog (Socket s,int X,int Y){
 
         JPanel panel= new JPanel();
@@ -130,6 +132,7 @@ public class FramesPanels {
 
         return panel;
     }
+    //график и слайдеры с пуском
     public static JPanel Jparam (Socket s,int X,int Y){
         final int[] Size = new int[1];
         final int[] Sizem = new int[1];
@@ -146,6 +149,7 @@ public class FramesPanels {
         mainpanel.setBackground(colour[0]);
         mainpanel.revalidate();
         String[] items={
+                "",
                 "red",
                 "white",
                 "black",
@@ -165,7 +169,7 @@ public class FramesPanels {
             }
         });
         JLabel sizelb= new JLabel("Размер минимум:");
-        JSlider sizeSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        JSlider sizeSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
         sizeSl.setMajorTickSpacing(10);
         sizeSl.setMinorTickSpacing(5);
         sizeSl.setPaintTicks(true);
@@ -180,7 +184,7 @@ public class FramesPanels {
         });
 
         JLabel sizelbm= new JLabel("Размер максимум:");
-        JSlider sizeSlm= new JSlider(JSlider.HORIZONTAL,0,1000,500);
+        JSlider sizeSlm= new JSlider(JSlider.HORIZONTAL,0,100,50);
         sizeSlm.setMajorTickSpacing(10);
         sizeSlm.setMinorTickSpacing(5);
         sizeSlm.setPaintTicks(true);
@@ -197,11 +201,11 @@ public class FramesPanels {
         JLabel Xlb= new JLabel("X минимальный:");
         JSlider XSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         XSl.setBackground(colour[0]);
-        XSl.setMajorTickSpacing(10);
-        XSl.setMinorTickSpacing(5);
+        XSl.setMajorTickSpacing(100);
+        XSl.setMinorTickSpacing(55);
         XSl.setPaintTicks(true);
         XSl.setPaintLabels(true);
-        XSl.setMinimumSize(new Dimension(200,50));
+        XSl.setMinimumSize(new Dimension(275,50));
         XSl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -212,11 +216,11 @@ public class FramesPanels {
         JLabel Xmlb= new JLabel("X максимальный:");
         JSlider XmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         XmSl.setBackground(colour[0]);
-        XmSl.setMajorTickSpacing(10);
-        XmSl.setMinorTickSpacing(5);
+        XmSl.setMajorTickSpacing(100);
+        XmSl.setMinorTickSpacing(50);
         XmSl.setPaintTicks(true);
         XmSl.setPaintLabels(true);
-        XmSl.setMinimumSize(new Dimension(200,50));
+        XmSl.setMinimumSize(new Dimension(275,50));
         XmSl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -227,11 +231,11 @@ public class FramesPanels {
         JLabel Ylb= new JLabel("Y минимальный:");
         JSlider YSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         YSl.setBackground(colour[0]);
-        YSl.setMajorTickSpacing(10);
-        YSl.setMinorTickSpacing(5);
+        YSl.setMajorTickSpacing(100);
+        YSl.setMinorTickSpacing(50);
         YSl.setPaintTicks(true);
         YSl.setPaintLabels(true);
-        YSl.setMinimumSize(new Dimension(200,50));
+        YSl.setMinimumSize(new Dimension(275,50));
         YSl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -242,11 +246,11 @@ public class FramesPanels {
         JLabel Ymlb= new JLabel("Y максимальный:");
         JSlider YmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         YmSl.setBackground(colour[0]);
-        YmSl.setMajorTickSpacing(10);
-        YmSl.setMinorTickSpacing(5);
+        YmSl.setMajorTickSpacing(100);
+        YmSl.setMinorTickSpacing(50);
         YmSl.setPaintTicks(true);
         YmSl.setPaintLabels(true);
-        YmSl.setMinimumSize(new Dimension(200,50));
+        YmSl.setMinimumSize(new Dimension(275,50));
         YmSl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -258,31 +262,39 @@ public class FramesPanels {
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (start.getText().equals("Поиск"))
-                {start.setText("Стоп");
-                for (PortretButton pb:ClienGui.buttons) {
-                    Color color = Parse.getCOLOUR(pb.portret.COLOUR);
-                    if ((pb.portret.SIZE>=Size[0]  ) &&
-                            (pb.portret.SIZE <= Sizem[0]) &&
-                            (color==colour[0]) &&
-                            (pb.portret.X >= x[0]) &&
-                            (pb.portret.X <= xm[0]) &&
-                            (pb.portret.Y >= y[0]) &&
-                            (pb.portret.Y <= Ym[0])) {
-                        new Thread(new changeThread(color, pb)).start();
-
-
-
+                if (start.getText().equals("Поиск")) {
+                    start.setText("Стоп");
+                    for (PortretButton pb : ClienGui.buttons) {
+                        Color color = Parse.getCOLOUR(pb.portret.COLOUR);
+                        if ((pb.portret.SIZE >= Size[0]) &&
+                                (pb.portret.SIZE <= Sizem[0]) &&
+                                (color == colour[0]) &&
+                                (pb.portret.X >= x[0]) &&
+                                (pb.portret.X <= xm[0]) &&
+                                (pb.portret.Y >= y[0]) &&
+                                (pb.portret.Y <= Ym[0])) {
+                            pb.isDraw = true;
+                            Thread thread = new Thread(new changeThread(color, pb,start));
+                            startThreads.add(thread);
+                            thread.start();
+                        }
                     }
+//                    try {
+//                        Thread.sleep(5000);
+//                    } catch (InterruptedException e1) {
+//                        e1.printStackTrace();
+//                    }
+//                    start.setText("Поиск");
+                } else {
+                    start.setText("Поиск");
+                    startThreads.forEach((item)->{item.interrupt();});
                 }
-                }
-                else start.setText("Поиск");
-
             }
         });
 
 
         canvas = new Canvas(50);
+        canvas.addBottons();
 
         canvas.setPreferredSize(new Dimension(700, 700));
         JScrollPane jScrollPane =new JScrollPane(canvas);
@@ -421,13 +433,16 @@ class Canvas extends JPanel{
             gr.drawString(""+i, 4, i-1);
         gr.drawString("Y", 5,25);
 
+
+
+    }
+     void addBottons(){
         ClienGui.initButtons();
         this.removeAll();
 
-        ClienGui.buttons.forEach((iem)-> {
-            this.add(iem);
+        ClienGui.buttons.forEach((item)-> {
+            this.add(item);
         });
-
     }
     public static void repaintCanvas() {
         Colltime.getColl();
@@ -445,6 +460,7 @@ class Canvas extends JPanel{
 class PortretButton extends JButton{
     private int size;
     public portret portret;
+    public boolean isDraw;
 
     class ClothesBorder implements Border{
         private int side;
@@ -454,7 +470,7 @@ class PortretButton extends JButton{
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             g.fillOval(x , y, width, 2*height/3);
-            g.setColor(Color.BLACK);
+            g.setColor(Color.red);
             g.drawOval(x , y, width, 2*height/3);
 
         }
@@ -475,44 +491,76 @@ class PortretButton extends JButton{
         this.size = portret.SIZE;
         setBackground(Color.BLACK);
         setForeground(Parse.getCOLOUR(portret.COLOUR));
-        setBounds(portret.X - Math.round(this.size/ 2), portret.Y - Math.round(this.size/2), this.size, this.size);
+        setBounds(portret.X - Math.round(this.size/ 2), portret.Y - Math.round(this.size/3), this.size, this.size);
         setBorder(new ClothesBorder(this.size));
-        setToolTipText(portret.NAME);
+        setToolTipText(portret.NAME+"\nХ="+portret.X+" Y="+portret.Y);
         setOpaque(false);
         setEnabled(false);
     }
     @Override
     public void paintComponent(Graphics g) {
-        g.setColor(Parse.getCOLOUR(portret.COLOUR));
-        g.fillOval(portret.X - Math.round(size/ 2), portret.Y - Math.round(size/2), portret.SIZE, portret.SIZE/2);
+//        g.setColor(Parse.getCOLOUR(portret.COLOUR));
+      //  g.fillRect(portret.X - Math.round(size/ 2), portret.Y - Math.round(size/2), size, size/2);
     }
     public void change(Color col){
-        this.setBackground(col);
+        int k=30;
+        int red=col.getRed();
+        int blue=col.getBlue();
+        int green= col.getGreen();
+        int rpart= (255-red)/k;
+            int bpart= (255-blue)/k;
+            int gpart= (255-green)/k;
+            while (red+rpart<255||blue+bpart<255||green+gpart<255){
+                red=red+rpart;
+                blue=blue+bpart;
+                green=green+gpart;
+            this.setForeground(new Color(red,green,blue));
+                try {
+                    Thread.sleep(66);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        System.out.println("white");
+            while (col.getBlue()<=blue&&col.getGreen()<=green&&col.getRed()<=red){
+                this.setForeground(new Color(red,green,blue));
+                red=red-rpart;
+                blue=blue-bpart;
+                green=green-gpart;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
 
-    }
+            }
+            this.setForeground(col);
+
+
+
+
+        }
 }
+
+
+
+
+
 
 class changeThread implements Runnable{
     Color prev;
     PortretButton pb;
-    changeThread(Color prev, PortretButton pb){
+    JButton start;
+    changeThread(Color prev, PortretButton pb,JButton start){
         this.pb=pb;
         this.prev=prev;
+        this.start=start;
     }
     @Override
     public void run() {
-        pb.change(Color.white);
-        FramesPanels.canvas.repaint();
-        FramesPanels.canvas.revalidate();
-        FramesPanels.canvas.updateUI();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-     //   pb.change(prev);
-        FramesPanels.canvas.repaint();
-        FramesPanels.canvas.revalidate();
-        FramesPanels.canvas.updateUI();
+        pb.change(prev);
+        start.setText("Поиск");
+
+        System.out.println("rewr");
     }
 }
