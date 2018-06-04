@@ -73,7 +73,7 @@ public class FramesPanels {
    public static JFrame Jcount(String s){
         JFrame jfreme= new JFrame();
         jfreme.setVisible(true);
-        jfreme.setResizable(false);
+        jfreme.setResizable(true);
         jfreme.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         Toolkit toolkit= Toolkit.getDefaultToolkit();
         Dimension dem= toolkit.getScreenSize();

@@ -27,6 +27,7 @@ public class ClienGui {
         JFrame JMain = FramesPanels.getJmain(name);
         int X=JMain.getWidth();
         int Y=JMain.getHeight();
+        JMain.setResizable(false);
         JMain.setLayout(new BoxLayout(JMain.getContentPane(),BoxLayout.Y_AXIS));
         JMenuBar menuBar =client.MMenu.JMbuild(s);
         JMain.setJMenuBar(menuBar);

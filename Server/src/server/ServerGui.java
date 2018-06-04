@@ -289,6 +289,7 @@ public class ServerGui extends JFrame {
                         }
                 );
                 table2.setModel(modeltable2);
+                table2.setEnabled(false);
                 //table2.setDefaultRenderer(Object.class,tableInfoRenderer);
                 {
                     TableColumnModel cm = table2.getColumnModel();
@@ -445,19 +446,21 @@ public class ServerGui extends JFrame {
     }
     public static void changeColour(int id, Color colour)
     {
-        Colouring.setTableColor(id,table1,colour);
+        tableCange tableCange= new yellowColouring(new Colouring());
+        tableCange.setTableColor(id,table1,colour);
     }
 }
-
- class Colouring extends DefaultTableCellRenderer
+interface tableCange    {
+    void setTableColor(int id,JTable table,Color colour);
+}
+ class Colouring implements tableCange
  {
 
-
-    public static void setTableColor(int id,JTable table,Color colour)
-    {
+     @Override
+     public void setTableColor(int id, JTable table, Color colour) {
         for(int i = 0;i< SampleServer.Clients.size();i++)
-        {
-            if( String.valueOf(id).equals(table.getValueAt(i,0)));
+        {   String tblcol=(String)table.getValueAt(i,0);
+            if( id==Integer.valueOf(tblcol))
             {
 
 //                MyRenderer ren = (MyRenderer)ServerGui.table1.getCellRenderer(i,0);
@@ -469,6 +472,41 @@ public class ServerGui extends JFrame {
 
     }
 
+}
+abstract class colouringDecorator implements tableCange{
+    Colouring colouringDecorator;
+
+    public colouringDecorator(Colouring colouringDecorator) {
+        this.colouringDecorator = colouringDecorator;
+    }
+
+    @Override
+    public abstract void setTableColor(int id, JTable table, Color colour);
+}
+class  yellowColouring extends colouringDecorator{
+
+    public yellowColouring(Colouring colouringDecorator) {
+        super(colouringDecorator);
+    }
+
+    @Override
+    public void setTableColor(int id, JTable table, Color colour) {
+        colouringDecorator.setTableColor(id,table,colour);
+        for(int i = 0;i< SampleServer.Clients.size();i++)
+        {   String tblcol=(String)table.getValueAt(i,0);
+            if( id==Integer.valueOf(tblcol)&&((id%2)==0))
+            {
+
+//                MyRenderer ren = (MyRenderer)ServerGui.table1.getCellRenderer(i,0);
+                if(colour==Color.white)
+                    ServerGui.map.put(i,colour);
+                else
+                ServerGui.map.put(i,Color.yellow);
+                ((AbstractTableModel)table.getModel()).fireTableCellUpdated(i,0);
+                table.updateUI();
+            }
+        }
+    }
 }
  class TableInfoRenderer extends DefaultTableCellRenderer {
     int counter;
@@ -495,8 +533,10 @@ public class ServerGui extends JFrame {
                 c.setForeground(Color.BLACK);
                 c.setBackground((Color)me.getValue());
                 counter++;
-                if(counter==2){
-                it.remove();}
+                if(counter==3){
+                it.remove();
+                counter=0;
+                }
                 return c;
             }
         }
