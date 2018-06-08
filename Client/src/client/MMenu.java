@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Socket;
 
+import static client.SampleClient.recieve;
+import static client.SampleClient.send;
+import static client.SampleClient.sockbusy;
+
 public class MMenu {
     public static JMenuBar JMbuild(Socket s){
     JMenuBar menuBar = new JMenuBar();
@@ -21,8 +25,11 @@ public class MMenu {
         @Override
         public void actionPerformed(ActionEvent e) {
             try{
-                s.getOutputStream().write("save".getBytes("UTF-8"));
+                while (sockbusy){}
+                SampleClient.sockbusy=true;
+                send("save");
                 Canvas.repaintCanvas();
+                SampleClient.sockbusy=false;
             }catch (Exception y){
                 JOptionPane.showMessageDialog(null, "You are banned!");
                 System.exit(1);
@@ -47,10 +54,11 @@ public class MMenu {
         @Override
         public void actionPerformed(ActionEvent e) {
             try{
-                s.getOutputStream().write("count".getBytes("UTF-8"));
-                byte buf[] = new byte[1024 * 1024];
-                s.getInputStream().read(buf);
-                FramesPanels.Jcount(new String(buf,"UTF-8"));
+                while (sockbusy){}
+                SampleClient.sockbusy=true;
+                send("count");
+                FramesPanels.Jcount(recieve());
+                SampleClient.sockbusy=false;
             }catch (Exception y){
                 JOptionPane.showMessageDialog(null, "You are banned!");
                 System.exit(1);
@@ -63,7 +71,10 @@ public class MMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    s.getOutputStream().write("sortN".getBytes("UTF-8"));
+                    while (sockbusy){}
+                    SampleClient.sockbusy=true;
+                    send("sortN");
+                    SampleClient.sockbusy=false;
                 }catch (Exception s){
                     JOptionPane.showMessageDialog(null, "You are banned!");
                     System.exit(1);
@@ -75,7 +86,10 @@ public class MMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    s.getOutputStream().write("sort".getBytes("UTF-8"));
+                    while (sockbusy){}
+                    sockbusy=true;
+                    send("sort");
+                    sockbusy=false;
                 }catch (Exception s){
                     JOptionPane.showMessageDialog(null, "You are banned!");
                     System.exit(1);
@@ -88,8 +102,11 @@ public class MMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    s.getOutputStream().write("remove_last".getBytes("UTF-8"));
+                    while (sockbusy){}
+                    sockbusy=true;
+                    send("remove_last");
                     Canvas.repaintCanvas();
+                    sockbusy=false;
                 }catch (Exception s){
                     JOptionPane.showMessageDialog(null, "You are banned!");
                     System.exit(1);

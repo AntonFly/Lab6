@@ -10,18 +10,27 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import static client.SampleClient.sockbusy;
+
 public class SampleClient extends Thread
 {
-    public  static PortretList portretList;
+    public static boolean sockbusy=false;
+    public static PortretList portretList;
+    static Socket s;
+    static OutputStream os;
+    static InputStream ins;
+    static byte buf[] = new byte[1024 * 1024];
     public static void main(String args[])
+
     {try {
         try {
 
             // открываем сокет и коннектимся к localhost:3128
             // получаем сокет сервера
-            Socket s = new Socket("localhost", 5682);
-            OutputStream os = s.getOutputStream();
-            InputStream ins= s.getInputStream();
+            s = new Socket("localhost", 5682);
+            os = s.getOutputStream();
+            ins= s.getInputStream();
+            new Thread(new checkSocket(s)).start();
             String name;
             Colltime clltm= new Colltime(os,ins);
             Thread NK = new Thread(clltm);
@@ -30,10 +39,10 @@ public class SampleClient extends Thread
                 name = JOptionPane.showInputDialog("Ведите имя, под которым вы хотите отображаться в системе;");
                 if (name.length() != 0) {
                     try {
-                        os.write(name.getBytes("UTF-8"));
+                        send(name);
                         break;
                     } catch (IndexOutOfBoundsException e) {
-                        os.write("noName".getBytes("UTF-8"));
+                        send("noName");
 
                     }
                 }
@@ -46,30 +55,33 @@ public class SampleClient extends Thread
 
                     try {
                         //System.out.println("exit");
-                        os.write("closeClient".getBytes("UTF-8"));
+                        send("closeClient");
                     } catch (Exception e) {
                     }
 
                 }
 
             }
+//            new Thread(new checkSocket(s)).start();
             ShutdownHook shutdownHook = new ShutdownHook();
             Runtime.getRuntime().addShutdownHook(shutdownHook);
             // берём поток вывода и выводим туда первый аргумент
             // заданный при вызове, адрес открытого сокета и его порт
             ClienGui cgi = new ClienGui(name, s,portretList);
             cgi.buildGui();
-//            NK.start();
+            NK.start();
             Scanner in = new Scanner(System.in);
 
             String input;
             while (true) {
                // System.out.print("Enter command (enter \"?\" to call up a list of commands): ");
                 input = in.nextLine();
+                while (sockbusy){}
+                sockbusy=true;
                 switch (input) {
                     case "":
                         //System.out.println("Unknown command");
-                        os.write("unk".getBytes("UTF-8"));
+                        send("unk");
                         break;
                     case "?":
                         Commands.help();
@@ -78,21 +90,19 @@ public class SampleClient extends Thread
                         Main.Lab34();
                         continue;
                     case "q":
-                        os.write("closeClient".getBytes("UTF-8"));
+                        send("closeClient");
                         System.exit(0);
                     default:
-                        os.write(input.getBytes("UTF-8"));
+                        send(input);
                 }
 
-
                 // читаем ответ
-                byte buf[] = new byte[1024 * 1024];
-                ins.read(buf);
-                System.out.println("Waiting for server answer...");
-                String retstr = new String(buf, "UTF-8");
+//                System.out.println("Waiting for server answer...");
+                String retstr =recieve();
                 // выводим ответ в консоль
                 System.out.println(retstr);
                 Canvas.repaintCanvas();
+                sockbusy=false;
             }
         } catch (SocketException e) {
             JOptionPane.showMessageDialog(null, "You are banned!");
@@ -106,12 +116,21 @@ public class SampleClient extends Thread
         //e.printStackTrace();
     }
     }
+     synchronized public  static void send(String stringToSend) throws Exception {
+        os.write(stringToSend.getBytes("UTF-8"));
+    }
+    synchronized public static String recieve() throws IOException {
+        buf= new byte[1024*1024];
+        ins.read(buf);
+        return new String(buf,"UTF-8");
+    }
 }
  class Colltime implements Runnable {
      Socket s;
+     byte[] buf;
      static OutputStream os;
      static InputStream ins;
-
+     static ObjectInputStream ois;
      Colltime(OutputStream os, InputStream ins) {
          this.os = os;
          this.ins = ins;
@@ -120,7 +139,12 @@ public class SampleClient extends Thread
      @Override
      public void run() {
          while (true) {
+//             Canvas.repaintCanvas();
+             while (sockbusy){}
+             sockbusy=true;
              getColl();
+             sockbusy=false;
+
              try {
                  Thread.sleep(5000);
              } catch (InterruptedException e) {
@@ -135,7 +159,7 @@ public class SampleClient extends Thread
              byte buf[] = new byte[1024 * 1024];
              ArrayList<portret> received;
              os.write("getPortList".getBytes("UTF-8"));
-             ObjectInputStream ois = new ObjectInputStream(ins);
+             ois = new ObjectInputStream(ins);
              received = (ArrayList<portret>) ois.readObject();
              SampleClient.portretList.Mo.clear();
              SampleClient.portretList.Mo.addAll(received);
@@ -144,13 +168,33 @@ public class SampleClient extends Thread
 //                 System.out.println("r");
 //
 //             }
-         } catch (Exception e) {
+             sockbusy=false;
+         }catch (StreamCorruptedException e){
+           e.printStackTrace();
+         }
+         catch (Exception e) {
+             e.printStackTrace();
              JOptionPane.showMessageDialog(null, "You are banned!");
              System.exit(1);
-             e.printStackTrace();
+
          }
 
      }
 
 
  }
+class checkSocket implements Runnable{
+    private final Socket s;
+
+    checkSocket(Socket s){
+        this.s=s;
+    }
+    @Override
+    public void run() {
+        while (s.isConnected()){
+
+        }
+        JOptionPane.showMessageDialog(null, "You are banned!");
+        System.exit(1);
+    }
+}

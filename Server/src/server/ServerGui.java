@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.net.Socket;
 import java.util.*;
 import java.util.List;
 import javax.swing.table.*;
@@ -15,7 +16,7 @@ import javax.swing.border.Border;
 
 public class ServerGui extends JFrame {
     static PortretList pl;
-    Color Colour = new Color(115, 196, 98);
+    Color Colour = new Color(139, 186, 196);
     static List<NewClient> Clients;
 
     ServerGui(PortretList pl, List<NewClient> Clients) {
@@ -222,7 +223,7 @@ public class ServerGui extends JFrame {
                         new Object[][]{
                         },
                         new String[]{
-                                "ИД",
+                                "Порт",
                                 "\u041a\u043b\u0438\u0435\u043d\u0442"
                         }
                 );
@@ -266,7 +267,7 @@ public class ServerGui extends JFrame {
 
             //---- button1 ----
             button1.setText("\u041e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c");
-            panel1.add(button1, BorderLayout.SOUTH);
+//            panel1.add(button1, BorderLayout.SOUTH);
         }
         contentPane.add(panel1, BorderLayout.EAST);
 
@@ -402,7 +403,8 @@ public class ServerGui extends JFrame {
         }
         for (NewClient client : Clients
                 ) {
-            modeltable1.addRow(new String[]{String.valueOf(client.num), client.name});
+            int port = client.s.getPort();
+            modeltable1.addRow(new String[]{String.valueOf(port), client.name});
             modeltable1.fireTableRowsInserted(modeltable1.getRowCount() - 1, modeltable1.getRowCount() - 1);
         }
         modeltable2.fireTableDataChanged();
@@ -411,7 +413,7 @@ public class ServerGui extends JFrame {
 
     //добавление строки клиента
     public static void addRawClient(NewClient client) {
-        modeltable1.addRow(new String[]{String.valueOf(client.num), client.name});
+        modeltable1.addRow(new String[]{String.valueOf(client.s.getPort()), client.name});
         //contentPane.repaint();
         //contentPane.revalidate();
     }
@@ -427,8 +429,8 @@ public class ServerGui extends JFrame {
                     //System.out.println(			table.getValueAt(row,0));
                     for (int i = 0; i < SampleServer.Clients.size(); i++) {
                         NewClient cl = SampleServer.Clients.get(i);
-                        int zn = Integer.valueOf(String.valueOf(table.getValueAt(row, 0)));
-                        if (cl.num == /*Integer.parseInt((String)*/zn) {
+                        String zn = String.valueOf(table.getValueAt(row, 1));
+                        if (cl.name.equals( /*Integer.parseInt((String)*/ zn)) {
                             SampleServer.Clients.remove(i);
                             modeltable1.removeRow(row);
                             modeltable1.fireTableDataChanged();
@@ -444,10 +446,10 @@ public class ServerGui extends JFrame {
             add(ban);
         }
     }
-    public static void changeColour(int id, Color colour)
+    public static void changeColour(Socket s, Color colour)
     {
         tableCange tableCange= new yellowColouring(new Colouring());
-        tableCange.setTableColor(id,table1,colour);
+        tableCange.setTableColor(s.getPort(),table1,colour);
     }
 }
 interface tableCange    {

@@ -19,9 +19,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static client.SampleClient.recieve;
+import static client.SampleClient.send;
+import static client.SampleClient.sockbusy;
+
 public class FramesPanels {
     static ArrayList<Thread> startThreads= new ArrayList<>();
     public static Canvas canvas;
+    public static final Color[] colour = {new Color(139, 186, 196)};
   public   static JFrame getJmain(String name){
         JFrame jfreme= new JFrame();
         jfreme.setResizable(false);
@@ -97,7 +102,7 @@ public class FramesPanels {
     public static JPanel Jdiolog (Socket s,int X,int Y){
 
         JPanel panel= new JPanel();
-        panel.setBackground(Color.cyan);
+        panel.setBackground(colour[0]);
         panel.setBorder(BorderFactory.createTitledBorder(""));
         panel.setPreferredSize(new Dimension(X,150));
         //panel.setSiz;
@@ -113,13 +118,13 @@ public class FramesPanels {
             public void actionPerformed(ActionEvent e) {
                  String text =tf.getText();
                 try {
-                    s.getOutputStream().write(text.getBytes("UTF-8"));
+//                    while (sockbusy){}
+                    SampleClient.sockbusy=true;
+                    send(text);
                     tf.setText("");
-                    byte buf[] = new byte[1024 * 1024];
-                    s.getInputStream().read(buf);
-                    String anser= new String(buf,"UTF-8");
-                    ta.setText(anser);
-                } catch (IOException e1) {
+                    ta.setText(recieve());
+                    SampleClient.sockbusy=false;
+                } catch (Exception e1) {
                     JOptionPane.showMessageDialog(null, "You are banned!");
                     System.exit(1);
                 }
@@ -145,7 +150,7 @@ public class FramesPanels {
         GridBagLayout gridBagLayout= new GridBagLayout();
         mainpanel.setLayout(gridBagLayout);
         GridBagConstraints c =new GridBagConstraints();
-        final Color[] colour = {Color.cyan};
+
         mainpanel.setBackground(colour[0]);
         mainpanel.revalidate();
         String[] items={
@@ -493,7 +498,7 @@ class PortretButton extends JButton{
         setForeground(Parse.getCOLOUR(portret.COLOUR));
         setBounds(portret.X - Math.round(this.size/ 2), portret.Y - Math.round(this.size/3), this.size, this.size);
         setBorder(new ClothesBorder(this.size));
-        setToolTipText(portret.NAME+"\nХ="+portret.X+" Y="+portret.Y);
+        setToolTipText("<html><p>"+portret.NAME+"<br>Х="+portret.X+" Y="+portret.Y+"</p></html>");
         setOpaque(false);
         setEnabled(false);
     }
