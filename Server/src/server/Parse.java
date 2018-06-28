@@ -3,6 +3,7 @@ import Lab234.portret;
 import com.google.gson.*;
 
 import java.awt.*;
+import java.time.ZonedDateTime;
 
 public class Parse {
     public static final Gson GSON= new GsonBuilder().setPrettyPrinting().create();
@@ -13,6 +14,7 @@ public class Parse {
     static String Location;
     static String COLOUR;
     static int X,Y;
+    static String creationTime;
 
     static public void deserializeXML(String inputStr) throws server.XmlExeption {
        // inputStr=inputStr.trim();
@@ -27,29 +29,6 @@ public class Parse {
                 parametrs[1] = parametrs[1].substring(1, parametrs[1].length() - 1);
                 switch (parametrs[0]) {
                     case "COLOUR":
-//                        switch (parametrs[1]){
-//                            case "white":
-//                                COLOUR=Color.white;
-//                                break;
-//                            case "red":
-//                                COLOUR=Color.red;
-//                                break;
-//                            case "green":
-//                                COLOUR=Color.green;
-//                                break;
-//                            case "blue":
-//                                COLOUR=Color.blue;
-//                                break;
-//                            case "black":
-//                                COLOUR=Color.black;
-//                                break;
-//                            case "yellow":
-//                                COLOUR=Color.yellow;
-//                                break;
-//                            case "pink":
-//                                COLOUR=Color.pink;
-//                                break;
-//                        }
                         COLOUR=parametrs[1];
                         break;
                     case "X":
@@ -70,7 +49,9 @@ public class Parse {
                     case "LOCATION":
                         Location = parametrs[1];
                         break;
-
+                    case  "creationTime":
+                        creationTime=(parametrs[1]);
+                        break;
 
                 }
                 ;
@@ -90,10 +71,10 @@ public class Parse {
         String str;
         double size=e.SIZE;
         if (e.SIZE % 1==0){
-         str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + (int)(size) + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\"/>\n";
+         str = "<NAME=\"" + e.NAME +  "\" SIZE=\"" + (int)(size) + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\" creationTime=\""+e.creationTime+"\"/>\n";
          }
         else{
-            str = "<NAME=\"" + e.NAME + "\" DATE=\"" + e.DATE + "\" SIZE=\"" + e.SIZE + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\"/>\n";
+            str = "<NAME=\"" + e.NAME +  "\" SIZE=\"" + e.SIZE + "\" LOCATION=\"" + e.LOCATION +"\" COLOUR=\""+e.COLOUR+ "\" X=\""+e.X+"\" Y=\""+e.Y+"\" creationTime=\""+e.creationTime+"\"/>\n";
         }
 
         return str;

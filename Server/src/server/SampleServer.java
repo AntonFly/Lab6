@@ -1,13 +1,15 @@
 package server;
+import Lab234.portret;
+
 import java.net.*;
 import java.util.*;
 
 public  class SampleServer //extends Thread
 {
+   static ORM<portret> orm;
    static Socket s;
    static int num=0;
     public static List<NewClient> Clients = new ArrayList();
-    //public  static List<Thread> threads = new ArrayList<>();
      public static Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
     public static void main(String args[]) throws InterruptedException {
         //создание коллекции и заполнение
@@ -15,7 +17,9 @@ public  class SampleServer //extends Thread
         ServerGui gui= new ServerGui(pl,Clients);
         gui.setVisible(true);
         gui.initComponents();
-
+        CTestDriver.connectBd();
+        orm = new ORM<>(portret.class,DatabaseProtocol.url,DatabaseProtocol.login,DatabaseProtocol.password,CTestDriver.statement);
+        orm.create();
 //        new Thread(new ServerCommands(pl,Clients,threads)).start();
         //Thread.sleep(1000);
         //System.out.println("1");

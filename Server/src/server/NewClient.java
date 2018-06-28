@@ -12,11 +12,14 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static server.CTestDriver.*;
+import static server.Parse.GSON;
 import static server.ServerGui.modeltable1;
 import static server.ServerGui.table1;
 
@@ -27,6 +30,7 @@ public class   NewClient implements Runnable{
     String name;
     int num;
     List<NewClient> Clients;
+    static String[] names;
     public String getName(){
         return name;
     };
@@ -42,8 +46,6 @@ public class   NewClient implements Runnable{
 
     public synchronized void run ()
     {
-//       int i = s.getPort();
-       // System.out.println("run 1");
             try
             {
                // System.out.println("run 2");
@@ -54,12 +56,43 @@ public class   NewClient implements Runnable{
 
                 // буффер данных в 64 килобайта
                 byte buf[];
-                buf = new byte[1024*1024];
-                is.read(buf);
-                name=new String(buf,"UTF-8");
-                name=name.trim();
+                int f=0;
+                while (f==0) {
+                    buf = new byte[1024*1024];
+                    is.read(buf);
+                    name = new String(buf, "UTF-8");
+                    name = name.trim();
+                    names = name.split(" ");
+                    name=names[0];
+                    switch (names[2]){
+                        case "log":
+                            if (checkExist(names[0]))
+                                 if(getPassword(names[0]).equals(names[1])&&!isBan(names[0])){
+                                os.write("true".getBytes());
+                                f=1;
+                                break;
+                            }
+                            os.write("no".getBytes());
+                            break;
+
+                        case "sign":
+
+                                if(!checkExist(names[0])){
+                                createUser(names[0],names[1]);
+                                os.write("true".getBytes());
+                                }
+                                else
+                                os.write("This user already exists".getBytes());
+                                break;
+
+
+
+                    }
+
+
+                }
                 if (name.equals("noName")) name=String.valueOf(num);
-                System.out.println("Client "+name+" is connected");
+                System.out.println("Client "+names[0]+" is connected");
                 ServerGui.addRawClient(this);
                 while(true)
                 {
@@ -138,8 +171,10 @@ public class   NewClient implements Runnable{
                                 ServerGui.changeColour(s, Color.green);
                                 ArrayList<portret> listToSend= new ArrayList<>();
                                 listToSend.addAll(pl.Mo);
-                                oos= new ObjectOutputStream(os);
-                                oos.writeObject(listToSend);
+                                String str =GSON.toJson(listToSend,listToSend.getClass());
+                                os.write(str.getBytes());
+//                                oos= new ObjectOutputStream(os);
+//                                oos.writeObject(listToSend);
                                 //oos.flush();
                                 //oos.close();
                                 Thread.sleep(500);
@@ -191,7 +226,7 @@ public class   NewClient implements Runnable{
                                 break;
                             case "remove_last":
                                 ServerGui.changeColour(s, Color.green);
-                                Commands.removeLast(pl.Mo).getBytes();
+                                Commands.removeLast(pl.Mo);
                                 Thread.sleep(500);
                                 ServerGui.changeColour(s, Color.white);
                                 break;
@@ -234,9 +269,7 @@ public class   NewClient implements Runnable{
 
 
                     }
-                    catch (ArrayIndexOutOfBoundsException e){
-                        os.write("No such element(ArrayIndexOutOfBoundsException)".getBytes());
-                    }
+                    catch (ArrayIndexOutOfBoundsException e){ e.printStackTrace();}
                     catch (JasonException e){
                         os.write(e.Jsret().getBytes());
                     }
@@ -258,8 +291,10 @@ public class   NewClient implements Runnable{
     public  void banCl(){
         try {
             s.close();
+            ban(names[0]);
             //JOptionPane.showMessageDialog(null,"Вы забанены!","Ошибка", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null,String.valueOf(e.getStackTrace()),"Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }

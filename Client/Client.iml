@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Lab6" />
     <orderEntry type="module" module-name="Server" />
+    <orderEntry type="library" name="ejb3-persistence-1.0.2.GA" level="application" />
   </component>
 </module>

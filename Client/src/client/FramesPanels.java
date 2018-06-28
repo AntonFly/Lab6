@@ -1,6 +1,8 @@
 package client;
 
 import Lab234.portret;
+//import com.sun.javafx.logging.JFRInputEvent;
+//import oracle.jrockit.jfr.JFR;
 import server.Parse;
 import sun.plugin2.util.ColorUtil;
 
@@ -16,18 +18,28 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static client.SampleClient.recieve;
-import static client.SampleClient.send;
-import static client.SampleClient.sockbusy;
+import static client.SampleClient.bundle;
+import static client.SampleClient.*;
 
 public class FramesPanels {
+    static JLabel comLable;
+    static JTextArea ta;
+    static JLabel colourlb;
+    static JLabel sizelb;
+    static JLabel sizelbm;
+    static JLabel Xlb;
+    static JLabel Xmlb;
+    static JLabel Ylb;
+    static JLabel Ymlb;
+    static JButton start;
     static ArrayList<Thread> startThreads= new ArrayList<>();
-    public static Canvas canvas;
-    public static final Color[] colour = {new Color(139, 186, 196)};
-  public   static JFrame getJmain(String name){
+    static Canvas canvas;
+    private static final Color[] colour = {new Color(139, 186, 196)};
+     static JFrame getJmain(String name){
         JFrame jfreme= new JFrame();
         jfreme.setResizable(false);
         jfreme.setVisible(true);
@@ -37,12 +49,12 @@ public class FramesPanels {
         int X=1200;
         int Y=810;
         jfreme.setBounds(dem.width/2-X/2,dem.height/2-Y/2,X,Y);
-        jfreme.setTitle("Клиент: "+name);
+        jfreme.setTitle("Client: "+name);
         //jfreme.setBackground(Color.cyan);
         return jfreme;
     }
     //окно помощи( список возможных команд)
-    public static JFrame Jhelp(){
+    static JFrame Jhelp() throws UnsupportedEncodingException {
         JFrame jfreme= new JFrame();
         jfreme.setVisible(true);
         jfreme.setResizable(false);
@@ -52,7 +64,7 @@ public class FramesPanels {
         int wid=500;
         int heig=600;
         jfreme.setBounds(dem.width/2-wid/2,dem.height/2-heig/2,wid,heig);
-        jfreme.setTitle("Помощь");
+        jfreme.setTitle(new String(bundle.getString("setmenu.help").getBytes("ISO-8859-1"),"UTF-8"));
         JLabel help= new JLabel("");
         JPanel htmlPanel = new JPanel();
         htmlPanel.setBorder(BorderFactory.createTitledBorder("Возможные команды"));
@@ -75,7 +87,7 @@ public class FramesPanels {
         //jfreme.set
         return jfreme;
     }
-   public static JFrame Jcount(String s){
+   static JFrame Jcount(String s) throws UnsupportedEncodingException {
         JFrame jfreme= new JFrame();
         jfreme.setVisible(true);
         jfreme.setResizable(true);
@@ -85,10 +97,10 @@ public class FramesPanels {
         int wid=300;
         int heig=100;
         jfreme.setBounds(dem.width/2-wid/2,dem.height/2-heig/2,wid,heig);
-        jfreme.setTitle("Инфо");
+        jfreme.setTitle(new String(bundle.getString("info").getBytes("ISO-8859-1"),"UTF-8"));
         JLabel help= new JLabel("");
         JPanel htmlPanel = new JPanel();
-        htmlPanel.setBorder(BorderFactory.createTitledBorder("Количество элементов в колекции:"));
+        htmlPanel.setBorder(BorderFactory.createTitledBorder(new String(bundle.getString("collmenu.count").getBytes("ISO-8859-1"),"UTF-8")));
         Font font = new Font("TimesNewRoman", Font.BOLD, 14);
         String text = s;
         JLabel htmlLabel = new JLabel();
@@ -99,7 +111,7 @@ public class FramesPanels {
         return jfreme;
     }
     //панель команд отправляемых серверу
-    public static JPanel Jdiolog (Socket s,int X,int Y){
+    public static JPanel Jdiolog (Socket s,int X,int Y) throws UnsupportedEncodingException {
 
         JPanel panel= new JPanel();
         panel.setBackground(colour[0]);
@@ -108,25 +120,29 @@ public class FramesPanels {
         //panel.setSiz;
       //  panel.setPreferredSize(new Dimension(900,10));
         //panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-        JLabel comLable= new JLabel();
-        comLable.setText("Введите команду:");
+        comLable= new JLabel();
+        comLable.setText(new String(bundle.getString("com").getBytes("ISO-8859-1"),"UTF-8"));
         JTextField tf= new JTextField(50);
-        JTextArea ta= new JTextArea("Результат выполнения",4,60);
+        ta= new JTextArea(new String(bundle.getString("res").getBytes("ISO-8859-1"),"UTF-8"),4,60);
         JScrollPane scrollPane= new JScrollPane(ta);
         tf.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                  String text =tf.getText();
                 try {
-//                    while (sockbusy){}
-                    SampleClient.sockbusy=true;
-                    send(text);
-                    tf.setText("");
-                    ta.setText(recieve());
-                    SampleClient.sockbusy=false;
+                    if(lock.tryLock()) {
+                        send(text);
+                        tf.setText("");
+                        ta.setText(recieve());
+                        Canvas.repaintCanvas();
+                    }
+
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(null, "You are banned!");
                     System.exit(1);
+                }
+                finally {
+                    lock.unlock();
                 }
             }
         });
@@ -138,7 +154,7 @@ public class FramesPanels {
         return panel;
     }
     //график и слайдеры с пуском
-    public static JPanel Jparam (Socket s,int X,int Y){
+    public static JPanel Jparam (Socket s,int X,int Y) throws UnsupportedEncodingException {
         final int[] Size = new int[1];
         final int[] Sizem = new int[1];
         final int[] xm = new int[1];
@@ -164,7 +180,7 @@ public class FramesPanels {
                 "pink",
                 "blue"
         };
-        JLabel colourlb= new JLabel("Цвет:");
+         colourlb= new JLabel(new String(bundle.getString("colour").getBytes("ISO-8859-1"),"UTF-8"));
         JComboBox colourcb=new JComboBox(items);
         colourcb.setMaximumSize(new Dimension(200,25));
         colourcb.addActionListener(new ActionListener() {
@@ -173,7 +189,7 @@ public class FramesPanels {
                   colour[0] =Parse.getCOLOUR((String) colourcb.getSelectedItem());
             }
         });
-        JLabel sizelb= new JLabel("Размер минимум:");
+        sizelb= new JLabel(new String(bundle.getString("size").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider sizeSl= new JSlider(JSlider.HORIZONTAL,0,100,50);
         sizeSl.setMajorTickSpacing(10);
         sizeSl.setMinorTickSpacing(5);
@@ -188,7 +204,7 @@ public class FramesPanels {
             }
         });
 
-        JLabel sizelbm= new JLabel("Размер максимум:");
+        sizelbm= new JLabel(new String(bundle.getString("sizem").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider sizeSlm= new JSlider(JSlider.HORIZONTAL,0,100,50);
         sizeSlm.setMajorTickSpacing(10);
         sizeSlm.setMinorTickSpacing(5);
@@ -203,7 +219,7 @@ public class FramesPanels {
             }
         });
 
-        JLabel Xlb= new JLabel("X минимальный:");
+        Xlb= new JLabel(new String(bundle.getString("x").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider XSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         XSl.setBackground(colour[0]);
         XSl.setMajorTickSpacing(100);
@@ -218,7 +234,7 @@ public class FramesPanels {
             }
         });
 
-        JLabel Xmlb= new JLabel("X максимальный:");
+        Xmlb= new JLabel(new String(bundle.getString("xm").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider XmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         XmSl.setBackground(colour[0]);
         XmSl.setMajorTickSpacing(100);
@@ -233,7 +249,7 @@ public class FramesPanels {
             }
         });
 
-        JLabel Ylb= new JLabel("Y минимальный:");
+        Ylb= new JLabel(new String(bundle.getString("y").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider YSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         YSl.setBackground(colour[0]);
         YSl.setMajorTickSpacing(100);
@@ -248,7 +264,7 @@ public class FramesPanels {
             }
         });
 
-        JLabel Ymlb= new JLabel("Y максимальный:");
+        Ymlb= new JLabel(new String(bundle.getString("ym").getBytes("ISO-8859-1"),"UTF-8"));
         JSlider YmSl= new JSlider(JSlider.HORIZONTAL,0,1000,500);
         YmSl.setBackground(colour[0]);
         YmSl.setMajorTickSpacing(100);
@@ -263,36 +279,40 @@ public class FramesPanels {
             }
         });
 
-        JButton start=new JButton("Поиск");
+        start=new JButton(new String(bundle.getString("looking").getBytes("ISO-8859-1"),"UTF-8"));
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (start.getText().equals("Поиск")) {
-                    start.setText("Стоп");
-                    for (PortretButton pb : ClienGui.buttons) {
-                        Color color = Parse.getCOLOUR(pb.portret.COLOUR);
-                        if ((pb.portret.SIZE >= Size[0]) &&
-                                (pb.portret.SIZE <= Sizem[0]) &&
-                                (color == colour[0]) &&
-                                (pb.portret.X >= x[0]) &&
-                                (pb.portret.X <= xm[0]) &&
-                                (pb.portret.Y >= y[0]) &&
-                                (pb.portret.Y <= Ym[0])) {
-                            pb.isDraw = true;
-                            Thread thread = new Thread(new changeThread(color, pb,start));
-                            startThreads.add(thread);
-                            thread.start();
+                try {
+                    if (start.getText().equals(new String(bundle.getString("looking").getBytes("ISO-8859-1"),"UTF-8"))) {
+                        start.setText(new String(bundle.getString("stop").getBytes("ISO-8859-1"),"UTF-8"));
+                        for (PortretButton pb : ClienGui.buttons) {
+                            Color color = Parse.getCOLOUR(pb.portret.COLOUR);
+                            if ((pb.portret.SIZE >= Size[0]) &&
+                                    (pb.portret.SIZE <= Sizem[0]) &&
+                                    (color == colour[0]) &&
+                                    (pb.portret.X >= x[0]) &&
+                                    (pb.portret.X <= xm[0]) &&
+                                    (pb.portret.Y >= y[0]) &&
+                                    (pb.portret.Y <= Ym[0])) {
+                                pb.isDraw = true;
+                                Thread thread = new Thread(new changeThread(color, pb,start));
+                                startThreads.add(thread);
+                                thread.start();
+                            }
                         }
+    //                    try {
+    //                        Thread.sleep(5000);
+    //                    } catch (InterruptedException e1) {
+    //                        e1.printStackTrace();
+    //                    }
+    //                    start.setText("Поиск");
+                    } else {
+                        start.setText(bundle.getString("looking"));
+                        startThreads.forEach((item)->{item.interrupt();});
                     }
-//                    try {
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException e1) {
-//                        e1.printStackTrace();
-//                    }
-//                    start.setText("Поиск");
-                } else {
-                    start.setText("Поиск");
-                    startThreads.forEach((item)->{item.interrupt();});
+                } catch (UnsupportedEncodingException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -449,7 +469,7 @@ class Canvas extends JPanel{
             this.add(item);
         });
     }
-    public static void repaintCanvas() {
+    public static void repaintCanvas() throws InterruptedException {
         Colltime.getColl();
         ClienGui.initButtons();
         FramesPanels.canvas.removeAll();
@@ -564,7 +584,11 @@ class changeThread implements Runnable{
     @Override
     public void run() {
         pb.change(prev);
-        start.setText("Поиск");
+        try {
+            start.setText(new String(bundle.getString("stop").getBytes("ISO-8859-1"),"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("rewr");
     }

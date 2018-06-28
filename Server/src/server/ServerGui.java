@@ -281,15 +281,23 @@ public class ServerGui extends JFrame {
             {
 
                 //---- table2 ----
-                table2.setPreferredSize(new Dimension(600, 32));
+                table2.setPreferredSize(new Dimension(900, 32));
                 modeltable2 = new DefaultTableModel(
                         new Object[][]{
                         },
                         new String[]{
-                                "\u0418\u043c\u044f", "\u0414\u0430\u0442\u0430", "\u0420\u0430\u0437\u043c\u0435\u0440", "\u041c\u0435\u0441\u0442\u043e\u043f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435", "\u0426\u0432\u0435\u0442", "\u041a\u043e\u043e\u0440\u0434. X", "\u041a\u043e\u043e\u0440\u0434. Y"
+                                "\u0418\u043c\u044f", "\u0420\u0430\u0437\u043c\u0435\u0440", "\u041c\u0435\u0441\u0442\u043e\u043f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435", "\u0426\u0432\u0435\u0442", "\u041a\u043e\u043e\u0440\u0434. X", "\u041a\u043e\u043e\u0440\u0434. Y", "Дата создания"
                         }
                 );
                 table2.setModel(modeltable2);
+                table2.setEnabled(false);
+                table2.getColumnModel().getColumn(5).setMaxWidth(70);
+                table2.getColumnModel().getColumn(3).setMaxWidth(70);
+                table2.getColumnModel().getColumn(4).setMaxWidth(70);
+                table2.getColumnModel().getColumn(0).setMinWidth(100);
+                table2.getColumnModel().getColumn(1).setMaxWidth(80);
+                table2.getColumnModel().getColumn(2).setMinWidth(150);
+                table2.getColumnModel().getColumn(6).setMinWidth(200);
                 table2.setEnabled(false);
                 //table2.setDefaultRenderer(Object.class,tableInfoRenderer);
                 {
@@ -365,12 +373,12 @@ public class ServerGui extends JFrame {
         for (portret portret : pl.Mo) {
             String[] data = {
                     portret.NAME,
-                    portret.DATE,
                     String.valueOf(portret.SIZE),
                     portret.LOCATION,
                     Parse.getColourName(Parse.getCOLOUR(portret.COLOUR)),
                     String.valueOf(portret.X),
-                    String.valueOf(portret.Y)
+                    String.valueOf(portret.Y),
+                    String.valueOf(portret.creationTime)
             };
             modeltable2.addRow(data);
             modeltable2.fireTableDataChanged();
@@ -385,12 +393,12 @@ public class ServerGui extends JFrame {
     public static void AddRowPrt(portret portret) {
         String[] data = {
                 portret.NAME,
-                portret.DATE,
                 String.valueOf(portret.SIZE),
                 portret.LOCATION,
                 Parse.getColourName(Parse.getCOLOUR(portret.COLOUR)),
                 String.valueOf(portret.X),
-                String.valueOf(portret.Y)
+                String.valueOf(portret.Y),
+                String.valueOf(portret.creationTime)
         };
         modeltable2.addRow(data);
         modeltable2.fireTableRowsInserted(modeltable2.getRowCount() - 1, modeltable2.getRowCount() - 1);
@@ -413,7 +421,7 @@ public class ServerGui extends JFrame {
 
     //добавление строки клиента
     public static void addRawClient(NewClient client) {
-        modeltable1.addRow(new String[]{String.valueOf(client.s.getPort()), client.name});
+        modeltable1.addRow(new String[]{String.valueOf(client.s.getPort()), client.names[0]});
         //contentPane.repaint();
         //contentPane.revalidate();
     }
@@ -476,10 +484,10 @@ interface tableCange    {
 
 }
 abstract class colouringDecorator implements tableCange{
-    Colouring colouringDecorator;
+    Colouring colouring;
 
-    public colouringDecorator(Colouring colouringDecorator) {
-        this.colouringDecorator = colouringDecorator;
+    public colouringDecorator(Colouring colouring) {
+        this.colouring = colouring;
     }
 
     @Override
@@ -493,7 +501,7 @@ class  yellowColouring extends colouringDecorator{
 
     @Override
     public void setTableColor(int id, JTable table, Color colour) {
-        colouringDecorator.setTableColor(id,table,colour);
+        colouring.setTableColor(id,table,colour);
         for(int i = 0;i< SampleServer.Clients.size();i++)
         {   String tblcol=(String)table.getValueAt(i,0);
             if( id==Integer.valueOf(tblcol)&&((id%2)==0))

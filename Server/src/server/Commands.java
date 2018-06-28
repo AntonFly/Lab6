@@ -6,8 +6,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static server.SampleServer.orm;
 
 //import java.util.CopyOnWriteArrayList;
 
@@ -78,6 +81,7 @@ public  class Commands {
         //System.out.println(Parse.serialize(Pl.get(Integer.valueOf(data)-1)));
         portret o=Pl.get(Integer.valueOf(data)-1);
         Pl.remove(o);
+        orm.delete(o);
         ServerGui.initPrtTable();
         return "Object number "+Integer.valueOf(data)+" is deleted";}
         }
@@ -102,39 +106,30 @@ public  class Commands {
      * @throws XmlExeption -исключечение, вызываемое при неверном формате входного файла (формат файла XML)
      */
     public synchronized static String read(CopyOnWriteArrayList<portret> Pl) throws XmlExeption{
-       // System.out.println("1");
         Pl.clear();
-            try  {
-                BufferedReader br = new BufferedReader(new FileReader(System.getenv("objects")));
-                String s1;
-
-                while ((s1 = br.readLine()) != null) {
-                    Parse.deserializeXML(s1);
-                    portret portret=new portret(Parse.Name, Parse.Date, Parse.Size, Parse.Location,Parse.COLOUR, Parse.X, Parse.Y );
-                    Pl.add(portret);
-//                    String[] data={
-//                            portret.NAME,
-//                            portret.DATE,
-//                            String.valueOf(portret.SIZE),
-//                            portret.LOCATION,
-//                            portret.COLOUR,
-//                            String.valueOf(portret.X),
-//                            String.valueOf(portret.Y)
-//                    };
-//                    FramesPanels.model.addRow(data);
-//                    FramesPanels.AddRow(portret);
-                }
-            }
-
-            /*catch (IOException e){
-                System.out.println("Не удается найти указанный файл");
-                System.exit(0);
-            }*/
-            catch (Exception e){
-                e.printStackTrace();
-            }
-
-
+        Pl.addAll(orm.getAll());
+//            try  {
+//                BufferedReader br = new BufferedReader(new FileReader(System.getenv("objects")));
+//                String s1;
+//
+//                while ((s1 = br.readLine()) != null) {
+//                    Parse.deserializeXML(s1);
+//                    portret portret=new portret(Parse.Name,  Parse.Size, Parse.Location,Parse.COLOUR, Parse.X, Parse.Y,Parse.creationTime );
+//                    Pl.add(portret);
+//                    orm.insert(portret);
+//
+//                }
+//            }
+//
+//            /*catch (IOException e){
+//                System.out.println("Не удается найти указанный файл");
+//                System.exit(0);
+//            }*/
+//            catch (Exception e){
+//                e.printStackTrace();
+//            }
+//
+//
 
        Pl.sort(portret::compareTo);
         return "";
@@ -157,8 +152,9 @@ public  class Commands {
             portret pr=GSON.fromJson(data, portret.class);
                     for (int i=0;i<Pl.size();){
                     portret ptr=Pl.get(i);
-                    if (ptr.NAME.equals(pr.NAME)&& ptr.SIZE==(pr.SIZE)&&ptr.DATE.equals(pr.DATE)&&ptr.LOCATION.equals(pr.LOCATION) ) {
+                    if (ptr.NAME.equals(pr.NAME)&& ptr.SIZE==(pr.SIZE)&&ptr.LOCATION.equals(pr.LOCATION) ) {
                         Pl.remove(i);
+                        orm.delete(pr);
                      f = true;
                     }else
                         i++;
@@ -184,10 +180,9 @@ public  class Commands {
     public synchronized static  String add(CopyOnWriteArrayList<portret> Pl, String data) throws JasonException {
         String output;
             portret pr=GSON.fromJson(data, portret.class);
-           // Parse.deserialaize(data);
-            //portret prt=new portret(Parse.Name,Parse.Date,Parse.Size,Parse.Location);
-            //System.out.println(pr.NAME+" "+pr.DATE+" "+pr.SIZE+" "+pr.LOCATION);
+             pr.creationTime= LocalDateTime.now();
             Pl.add(pr);
+            orm.insert(pr);
             output="Object is added";
             //Pl.sort(portret::compareTo);
             ServerGui.AddRowPrt(pr);
@@ -214,6 +209,7 @@ public  class Commands {
             }
             if(pr.SIZE<min){
                 Pl.add(pr);
+                orm.insert(pr);
                 output= "Object is added";
               //  Pl.sort(portret::compareTo);
                 ServerGui.AddRowPrt(pr);
@@ -258,6 +254,7 @@ public  class Commands {
      */
     public synchronized static String removeLast(CopyOnWriteArrayList<portret> Pl){
         int length=Pl.size();
+        orm.delete(Pl.get(length-1));
         Pl.remove(length-1);
         ServerGui.initPrtTable();
         return ("Element is removed");
